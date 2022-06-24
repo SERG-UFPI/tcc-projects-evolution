@@ -1,0 +1,682 @@
+[
+  {
+    "number": 1,
+    "creator": "jpedrodsp",
+    "state": "closed",
+    "labels": ["documentation", "help wanted", "urgent"],
+    "assignees": 4,
+    "comments": 0,
+    "created_at": "2020-11-23T18:52:05Z",
+    "closed_at": "2020-12-03T23:53:07Z"
+  },
+  {
+    "number": 2,
+    "creator": "jpedrodsp",
+    "state": "closed",
+    "labels": ["documentation", "help wanted", "urgent"],
+    "assignees": 4,
+    "comments": 0,
+    "created_at": "2020-11-23T18:52:48Z",
+    "closed_at": "2020-12-03T23:53:07Z"
+  },
+  {
+    "number": 3,
+    "creator": "jpedrodsp",
+    "state": "closed",
+    "labels": ["documentation", "help wanted", "urgent"],
+    "assignees": 4,
+    "comments": 0,
+    "created_at": "2020-11-23T18:53:16Z",
+    "closed_at": "2020-12-03T23:53:08Z"
+  },
+  {
+    "number": 4,
+    "creator": "jpedrodsp",
+    "state": "closed",
+    "labels": ["documentation", "help wanted", "urgent"],
+    "assignees": 4,
+    "comments": 0,
+    "created_at": "2020-11-23T18:53:35Z",
+    "closed_at": "2020-12-03T23:53:08Z"
+  },
+  {
+    "number": 5,
+    "creator": "jpedrodsp",
+    "state": "closed",
+    "labels": ["documentation", "help wanted", "urgent"],
+    "assignees": 4,
+    "comments": 0,
+    "created_at": "2020-11-23T18:56:03Z",
+    "closed_at": "2020-12-03T23:53:08Z"
+  },
+  {
+    "number": 6,
+    "creator": "jpedrodsp",
+    "state": "closed",
+    "labels": ["documentation", "help wanted", "urgent"],
+    "assignees": 4,
+    "comments": 0,
+    "created_at": "2020-11-23T18:59:22Z",
+    "closed_at": "2020-12-03T23:53:09Z"
+  },
+  {
+    "number": 12,
+    "creator": "jpedrodsp",
+    "state": "closed",
+    "labels": ["urgent"],
+    "assignees": 1,
+    "comments": 1,
+    "created_at": "2020-12-09T18:15:58Z",
+    "closed_at": "2020-12-10T23:06:56Z"
+  },
+  {
+    "number": 13,
+    "creator": "jpedrodsp",
+    "state": "closed",
+    "labels": ["urgent"],
+    "assignees": 1,
+    "comments": 0,
+    "created_at": "2020-12-09T18:16:30Z",
+    "closed_at": "2020-12-13T00:33:56Z"
+  },
+  {
+    "number": 16,
+    "creator": "jpedrodsp",
+    "state": "closed",
+    "labels": ["urgent"],
+    "assignees": 1,
+    "comments": 0,
+    "created_at": "2020-12-09T18:17:34Z",
+    "closed_at": "2020-12-13T00:34:44Z"
+  },
+  {
+    "number": 15,
+    "creator": "jpedrodsp",
+    "state": "closed",
+    "labels": ["urgent"],
+    "assignees": 1,
+    "comments": 0,
+    "created_at": "2020-12-09T18:17:23Z",
+    "closed_at": "2020-12-15T19:03:56Z"
+  },
+  {
+    "number": 14,
+    "creator": "jpedrodsp",
+    "state": "closed",
+    "labels": ["urgent"],
+    "assignees": 1,
+    "comments": 0,
+    "created_at": "2020-12-09T18:17:13Z",
+    "closed_at": "2020-12-15T19:04:01Z"
+  },
+  {
+    "number": 18,
+    "creator": "jpedrodsp",
+    "state": "closed",
+    "labels": ["urgent"],
+    "assignees": 1,
+    "comments": 0,
+    "created_at": "2020-12-09T18:46:37Z",
+    "closed_at": "2020-12-15T22:28:23Z"
+  },
+  {
+    "number": 26,
+    "creator": "alex-oliv",
+    "state": "closed",
+    "labels": ["urgent", "Backend"],
+    "assignees": 1,
+    "comments": 1,
+    "created_at": "2020-12-16T01:14:56Z",
+    "closed_at": "2020-12-16T01:36:37Z"
+  },
+  {
+    "number": 29,
+    "creator": "alex-oliv",
+    "state": "closed",
+    "labels": ["Backend"],
+    "assignees": 1,
+    "comments": 0,
+    "created_at": "2020-12-16T03:21:09Z",
+    "closed_at": "2020-12-16T13:43:05Z"
+  },
+  {
+    "number": 23,
+    "creator": "jpedrodsp",
+    "state": "closed",
+    "labels": ["Backend"],
+    "assignees": 1,
+    "comments": 0,
+    "created_at": "2020-12-15T23:21:32Z",
+    "closed_at": "2020-12-16T16:04:17Z"
+  },
+  {
+    "number": 17,
+    "creator": "jpedrodsp",
+    "state": "closed",
+    "labels": ["urgent"],
+    "assignees": 1,
+    "comments": 0,
+    "created_at": "2020-12-09T18:19:52Z",
+    "closed_at": "2020-12-16T16:36:49Z"
+  },
+  {
+    "number": 38,
+    "creator": "alex-oliv",
+    "state": "closed",
+    "labels": ["Backend"],
+    "assignees": 1,
+    "comments": 0,
+    "created_at": "2020-12-17T00:57:13Z",
+    "closed_at": "2020-12-17T01:35:24Z"
+  },
+  {
+    "number": 33,
+    "creator": "jpedrodsp",
+    "state": "closed",
+    "labels": ["Backend"],
+    "assignees": 1,
+    "comments": 0,
+    "created_at": "2020-12-16T18:08:09Z",
+    "closed_at": "2020-12-17T02:10:07Z"
+  },
+  {
+    "number": 32,
+    "creator": "jpedrodsp",
+    "state": "closed",
+    "labels": ["Backend"],
+    "assignees": 1,
+    "comments": 0,
+    "created_at": "2020-12-16T18:06:40Z",
+    "closed_at": "2020-12-20T21:38:08Z"
+  },
+  {
+    "number": 34,
+    "creator": "jpedrodsp",
+    "state": "closed",
+    "labels": ["Backend"],
+    "assignees": 1,
+    "comments": 0,
+    "created_at": "2020-12-16T18:10:59Z",
+    "closed_at": "2020-12-20T21:38:09Z"
+  },
+  {
+    "number": 25,
+    "creator": "jpedrodsp",
+    "state": "closed",
+    "labels": ["Backend"],
+    "assignees": 1,
+    "comments": 2,
+    "created_at": "2020-12-15T23:46:51Z",
+    "closed_at": "2020-12-21T19:58:09Z"
+  },
+  {
+    "number": 24,
+    "creator": "jpedrodsp",
+    "state": "closed",
+    "labels": ["Backend", "Web", "Mobile"],
+    "assignees": 1,
+    "comments": 0,
+    "created_at": "2020-12-15T23:24:58Z",
+    "closed_at": "2020-12-21T19:58:51Z"
+  },
+  {
+    "number": 43,
+    "creator": "alex-oliv",
+    "state": "closed",
+    "labels": ["Backend"],
+    "assignees": 1,
+    "comments": 0,
+    "created_at": "2020-12-21T20:07:58Z",
+    "closed_at": "2020-12-23T13:05:53Z"
+  },
+  {
+    "number": 36,
+    "creator": "jpedrodsp",
+    "state": "closed",
+    "labels": ["Backend"],
+    "assignees": 1,
+    "comments": 1,
+    "created_at": "2020-12-16T18:58:40Z",
+    "closed_at": "2020-12-23T13:07:43Z"
+  },
+  {
+    "number": 7,
+    "creator": "jpedrodsp",
+    "state": "closed",
+    "labels": ["Backend", "Big Task"],
+    "assignees": 4,
+    "comments": 1,
+    "created_at": "2020-12-07T19:02:56Z",
+    "closed_at": "2020-12-15T23:51:03Z"
+  },
+  {
+    "number": 8,
+    "creator": "jpedrodsp",
+    "state": "closed",
+    "labels": [],
+    "assignees": 0,
+    "comments": 1,
+    "created_at": "2020-12-07T19:03:36Z",
+    "closed_at": "2020-12-15T23:56:39Z"
+  },
+  {
+    "number": 10,
+    "creator": "jpedrodsp",
+    "state": "closed",
+    "labels": ["duplicate", "Backend"],
+    "assignees": 1,
+    "comments": 1,
+    "created_at": "2020-12-07T19:06:29Z",
+    "closed_at": "2020-12-15T23:52:57Z"
+  },
+  {
+    "number": 9,
+    "creator": "jpedrodsp",
+    "state": "closed",
+    "labels": ["duplicate", "Backend"],
+    "assignees": 0,
+    "comments": 1,
+    "created_at": "2020-12-07T19:04:47Z",
+    "closed_at": "2020-12-15T23:53:32Z"
+  },
+  {
+    "number": 66,
+    "creator": "alex-oliv",
+    "state": "closed",
+    "labels": ["Frontend"],
+    "assignees": 1,
+    "comments": 0,
+    "created_at": "2021-01-11T18:57:40Z",
+    "closed_at": "2021-01-13T16:22:50Z"
+  },
+  {
+    "number": 67,
+    "creator": "alex-oliv",
+    "state": "closed",
+    "labels": ["Frontend"],
+    "assignees": 1,
+    "comments": 0,
+    "created_at": "2021-01-11T18:59:04Z",
+    "closed_at": "2021-01-13T16:22:53Z"
+  },
+  {
+    "number": 68,
+    "creator": "alex-oliv",
+    "state": "closed",
+    "labels": ["Frontend"],
+    "assignees": 1,
+    "comments": 0,
+    "created_at": "2021-01-11T19:02:18Z",
+    "closed_at": "2021-01-13T16:22:59Z"
+  },
+  {
+    "number": 65,
+    "creator": "alex-oliv",
+    "state": "closed",
+    "labels": ["Backend"],
+    "assignees": 1,
+    "comments": 1,
+    "created_at": "2021-01-11T16:22:32Z",
+    "closed_at": "2021-01-14T00:01:02Z"
+  },
+  {
+    "number": 71,
+    "creator": "alex-oliv",
+    "state": "closed",
+    "labels": ["Backend"],
+    "assignees": 1,
+    "comments": 0,
+    "created_at": "2021-01-14T09:40:26Z",
+    "closed_at": "2021-01-14T15:50:33Z"
+  },
+  {
+    "number": 52,
+    "creator": "alex-oliv",
+    "state": "closed",
+    "labels": ["Frontend"],
+    "assignees": 1,
+    "comments": 0,
+    "created_at": "2021-01-11T16:15:26Z",
+    "closed_at": "2021-01-17T13:40:17Z"
+  },
+  {
+    "number": 75,
+    "creator": "alex-oliv",
+    "state": "closed",
+    "labels": ["Backend"],
+    "assignees": 1,
+    "comments": 0,
+    "created_at": "2021-01-18T22:51:51Z",
+    "closed_at": "2021-01-19T19:31:16Z"
+  },
+  {
+    "number": 58,
+    "creator": "alex-oliv",
+    "state": "closed",
+    "labels": ["Frontend"],
+    "assignees": 0,
+    "comments": 0,
+    "created_at": "2021-01-11T16:19:16Z",
+    "closed_at": "2021-01-20T10:43:41Z"
+  },
+  {
+    "number": 59,
+    "creator": "alex-oliv",
+    "state": "closed",
+    "labels": ["Frontend"],
+    "assignees": 0,
+    "comments": 0,
+    "created_at": "2021-01-11T16:19:47Z",
+    "closed_at": "2021-01-20T10:51:28Z"
+  },
+  {
+    "number": 60,
+    "creator": "alex-oliv",
+    "state": "closed",
+    "labels": ["Frontend"],
+    "assignees": 0,
+    "comments": 0,
+    "created_at": "2021-01-11T16:20:12Z",
+    "closed_at": "2021-01-20T10:51:32Z"
+  },
+  {
+    "number": 61,
+    "creator": "alex-oliv",
+    "state": "closed",
+    "labels": ["Frontend"],
+    "assignees": 0,
+    "comments": 0,
+    "created_at": "2021-01-11T16:20:37Z",
+    "closed_at": "2021-01-20T10:52:11Z"
+  },
+  {
+    "number": 79,
+    "creator": "alex-oliv",
+    "state": "closed",
+    "labels": [],
+    "assignees": 0,
+    "comments": 0,
+    "created_at": "2021-01-20T14:08:11Z",
+    "closed_at": "2021-01-20T16:15:47Z"
+  },
+  {
+    "number": 62,
+    "creator": "alex-oliv",
+    "state": "closed",
+    "labels": ["Backend", "Frontend"],
+    "assignees": 0,
+    "comments": 0,
+    "created_at": "2021-01-11T16:21:13Z",
+    "closed_at": "2021-01-20T18:14:13Z"
+  },
+  {
+    "number": 63,
+    "creator": "alex-oliv",
+    "state": "closed",
+    "labels": ["Backend", "Frontend"],
+    "assignees": 0,
+    "comments": 0,
+    "created_at": "2021-01-11T16:21:35Z",
+    "closed_at": "2021-01-20T18:14:21Z"
+  },
+  {
+    "number": 69,
+    "creator": "alex-oliv",
+    "state": "closed",
+    "labels": ["Backend", "Frontend"],
+    "assignees": 0,
+    "comments": 0,
+    "created_at": "2021-01-11T19:08:42Z",
+    "closed_at": "2021-01-20T18:14:29Z"
+  },
+  {
+    "number": 11,
+    "creator": "jpedrodsp",
+    "state": "closed",
+    "labels": ["Frontend", "Web", "Mobile", "Big Task"],
+    "assignees": 2,
+    "comments": 1,
+    "created_at": "2020-12-07T19:10:50Z",
+    "closed_at": "2021-01-22T03:10:50Z"
+  },
+  {
+    "number": 35,
+    "creator": "jpedrodsp",
+    "state": "closed",
+    "labels": ["Backend", "Frontend", "Mobile"],
+    "assignees": 2,
+    "comments": 0,
+    "created_at": "2020-12-16T18:38:53Z",
+    "closed_at": "2021-01-22T03:11:47Z"
+  },
+  {
+    "number": 74,
+    "creator": "jpedrodsp",
+    "state": "closed",
+    "labels": ["Backend"],
+    "assignees": 1,
+    "comments": 1,
+    "created_at": "2021-01-18T19:52:59Z",
+    "closed_at": "2021-01-22T03:12:13Z"
+  },
+  {
+    "number": 64,
+    "creator": "alex-oliv",
+    "state": "closed",
+    "labels": ["Backend", "Frontend"],
+    "assignees": 0,
+    "comments": 0,
+    "created_at": "2021-01-11T16:22:11Z",
+    "closed_at": "2021-01-22T11:11:42Z"
+  },
+  {
+    "number": 48,
+    "creator": "jpedrodsp",
+    "state": "closed",
+    "labels": ["Mobile"],
+    "assignees": 0,
+    "comments": 0,
+    "created_at": "2020-12-23T15:46:45Z",
+    "closed_at": "2021-01-22T11:12:19Z"
+  },
+  {
+    "number": 47,
+    "creator": "jpedrodsp",
+    "state": "closed",
+    "labels": ["Frontend", "Mobile"],
+    "assignees": 0,
+    "comments": 0,
+    "created_at": "2020-12-23T15:44:15Z",
+    "closed_at": "2021-01-22T11:12:53Z"
+  },
+  {
+    "number": 81,
+    "creator": "natannear",
+    "state": "closed",
+    "labels": ["Backend", "Frontend"],
+    "assignees": 1,
+    "comments": 0,
+    "created_at": "2021-01-22T11:24:22Z",
+    "closed_at": "2021-01-25T23:50:46Z"
+  },
+  {
+    "number": 82,
+    "creator": "natannear",
+    "state": "closed",
+    "labels": ["Backend", "Frontend"],
+    "assignees": 1,
+    "comments": 0,
+    "created_at": "2021-01-22T11:25:27Z",
+    "closed_at": "2021-01-25T23:51:01Z"
+  },
+  {
+    "number": 90,
+    "creator": "alex-oliv",
+    "state": "closed",
+    "labels": ["Backend", "Frontend"],
+    "assignees": 1,
+    "comments": 0,
+    "created_at": "2021-01-25T23:36:49Z",
+    "closed_at": "2021-01-25T23:51:36Z"
+  },
+  {
+    "number": 85,
+    "creator": "natannear",
+    "state": "closed",
+    "labels": ["enhancement", "Backend", "Frontend"],
+    "assignees": 1,
+    "comments": 0,
+    "created_at": "2021-01-22T11:30:01Z",
+    "closed_at": "2021-01-27T17:31:53Z"
+  },
+  {
+    "number": 88,
+    "creator": "natannear",
+    "state": "closed",
+    "labels": ["enhancement", "Backend", "Frontend"],
+    "assignees": 1,
+    "comments": 0,
+    "created_at": "2021-01-22T11:51:44Z",
+    "closed_at": "2021-01-27T17:31:53Z"
+  },
+  {
+    "number": 89,
+    "creator": "natannear",
+    "state": "closed",
+    "labels": ["enhancement", "Backend", "Frontend"],
+    "assignees": 1,
+    "comments": 0,
+    "created_at": "2021-01-22T11:52:32Z",
+    "closed_at": "2021-01-27T17:31:54Z"
+  },
+  {
+    "number": 95,
+    "creator": "jpedrodsp",
+    "state": "closed",
+    "labels": ["enhancement", "Backend"],
+    "assignees": 1,
+    "comments": 0,
+    "created_at": "2021-01-27T14:25:31Z",
+    "closed_at": "2021-01-29T12:26:20Z"
+  },
+  {
+    "number": 83,
+    "creator": "natannear",
+    "state": "closed",
+    "labels": ["Backend", "Frontend"],
+    "assignees": 0,
+    "comments": 0,
+    "created_at": "2021-01-22T11:27:14Z",
+    "closed_at": "2021-01-29T18:28:24Z"
+  },
+  {
+    "number": 84,
+    "creator": "natannear",
+    "state": "closed",
+    "labels": ["Backend", "Frontend"],
+    "assignees": 0,
+    "comments": 0,
+    "created_at": "2021-01-22T11:28:39Z",
+    "closed_at": "2021-01-31T14:25:47Z"
+  },
+  {
+    "number": 57,
+    "creator": "alex-oliv",
+    "state": "closed",
+    "labels": ["Frontend"],
+    "assignees": 0,
+    "comments": 0,
+    "created_at": "2021-01-11T16:18:34Z",
+    "closed_at": "2021-02-01T14:35:02Z"
+  },
+  {
+    "number": 51,
+    "creator": "alex-oliv",
+    "state": "closed",
+    "labels": ["Frontend"],
+    "assignees": 0,
+    "comments": 0,
+    "created_at": "2021-01-11T16:13:56Z",
+    "closed_at": "2021-02-01T14:41:34Z"
+  },
+  {
+    "number": 53,
+    "creator": "alex-oliv",
+    "state": "closed",
+    "labels": ["Frontend"],
+    "assignees": 0,
+    "comments": 0,
+    "created_at": "2021-01-11T16:16:04Z",
+    "closed_at": "2021-02-01T14:41:35Z"
+  },
+  {
+    "number": 54,
+    "creator": "alex-oliv",
+    "state": "closed",
+    "labels": ["Frontend"],
+    "assignees": 0,
+    "comments": 0,
+    "created_at": "2021-01-11T16:16:57Z",
+    "closed_at": "2021-02-01T14:41:35Z"
+  },
+  {
+    "number": 55,
+    "creator": "alex-oliv",
+    "state": "closed",
+    "labels": ["Backend", "Frontend"],
+    "assignees": 0,
+    "comments": 0,
+    "created_at": "2021-01-11T16:17:40Z",
+    "closed_at": "2021-02-01T14:41:35Z"
+  },
+  {
+    "number": 56,
+    "creator": "alex-oliv",
+    "state": "closed",
+    "labels": ["Frontend"],
+    "assignees": 0,
+    "comments": 0,
+    "created_at": "2021-01-11T16:18:04Z",
+    "closed_at": "2021-02-01T14:41:36Z"
+  },
+  {
+    "number": 87,
+    "creator": "natannear",
+    "state": "closed",
+    "labels": ["Backend", "Frontend"],
+    "assignees": 0,
+    "comments": 0,
+    "created_at": "2021-01-22T11:32:23Z",
+    "closed_at": "2021-02-01T16:35:15Z"
+  },
+  {
+    "number": 86,
+    "creator": "natannear",
+    "state": "closed",
+    "labels": ["Backend", "Frontend"],
+    "assignees": 0,
+    "comments": 0,
+    "created_at": "2021-01-22T11:31:06Z",
+    "closed_at": "2021-02-01T16:35:19Z"
+  },
+  {
+    "number": 49,
+    "creator": "jpedrodsp",
+    "state": "closed",
+    "labels": ["documentation", "enhancement"],
+    "assignees": 0,
+    "comments": 0,
+    "created_at": "2020-12-23T15:51:33Z",
+    "closed_at": "2021-02-01T16:35:53Z"
+  },
+  {
+    "number": 99,
+    "creator": "natannear",
+    "state": "closed",
+    "labels": [],
+    "assignees": 0,
+    "comments": 0,
+    "created_at": "2021-02-01T14:33:16Z",
+    "closed_at": "2021-02-01T16:38:09Z"
+  }
+]

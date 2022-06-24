@@ -1,0 +1,79 @@
+[tool.poetry]
+name = "perceval"
+version = "0.17.4"
+description = "Send Sir Perceval on a quest to fetch and gather data from software repositories."
+authors = [
+    "GrimoireLab Developers"
+]
+license = "GPL-3.0+"
+
+readme = "README.md"
+
+homepage = "https://chaoss.github.io/grimoirelab/"
+repository = "https://github.com/chaoss/grimoirelab-perceval"
+
+keywords = [
+    "development",
+    "grimoirelab"
+]
+
+packages = [
+    { include = "perceval" },
+    { include = "tests", format = "sdist" },
+]
+
+include = [
+    { path = "AUTHORS", format = "sdist" },
+    { path = "NEWS", format = "sdist" },
+    { path = "README.md", format = "sdist" },
+]
+
+classifiers = [
+   "Development Status :: 4 - Beta",
+   "Intended Audience :: Developers",
+   "Intended Audience :: Science/Research",
+   "Topic :: Software Development",
+   "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+   "Programming Language :: Python :: 3"
+]
+
+[tool.poetry.urls]
+"Bug Tracker" = "https://github.com/chaoss/grimoirelab-perceval/issues"
+
+[tool.poetry.scripts]
+perceval = 'perceval.perceval:main'
+
+[tool.poetry.dependencies]
+python = "^3.7"
+
+python-dateutil = "^2.6.0"
+requests = "^2.7.0"
+beautifulsoup4 = "^4.3.2"
+feedparser = "^6.0.8"
+dulwich = "^0.20.0"
+urllib3 = "^1.26"
+PyJWT = "^2.4.0"
+cryptography = "^3.3.2"
+grimoirelab-toolkit = "^0.2"
+
+# Documentation
+myst-parser = { version = "^0.15.2", optional = true }
+furo = { version = "^2021.8.31", optional = true }
+
+[tool.poetry.dev-dependencies]
+httpretty = "^1.1.4"
+flake8 = "^3.9.1"
+coverage = "^5.5"
+
+[tool.poetry.extras]
+docs = [
+    "furo",
+    "myst-parser",
+]
+
+[build-system]
+requires = [
+    "poetry-core>=1.0.0",
+    "setuptools>=30.3.0,<50"
+]
+build-backend = "poetry.core.masonry.api"

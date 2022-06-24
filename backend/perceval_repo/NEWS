@@ -1,0 +1,430 @@
+# Releases
+
+## Perceval 0.15.0 - (2020-06-13)
+
+**New features:**
+
+ * Add Rocket.Chat backend (#543)\
+   Added support to fetch messages from a Rocket.Chat channel. The
+   messages are fetched in an ascending order based on time when they
+   were last updated. The channel information is also fetched. The tests
+   have been added accordingly. The usage docs have been updated.
+
+## Perceval 0.12 - (2018-10-02)
+
+** New features and improvements: **
+
+ * So far, the JSON items written to the defined output (standard output
+   by default) were difficult to parse. With the option `--json-line`, each
+   item will be written in one line, making easier their consumption by
+   other processes.
+ * New set of backends added:
+   - **GoogleHits**
+   - **Twitter**
+ * Minor bugs were fixed and test coverage was improved.
+
+** Backend improvements: **
+
+ * **gitlab**
+   - add merge request category
+ * **github**
+   - increase the number of items retrieved per page
+   - add the list of commits hashed included in pull requests
+ * **mediawiki**
+   - optimize the number of API calls
+ * **pipermail**
+   - disable SSL verification
+
+
+## Perceval 0.11 - (2018-05-21)
+
+** New features improvements: **
+
+ * Problems with namespaces were fixed. This package was not really using
+   Python namespaces. When other packages, such as `perceval-mozilla` or
+   `perceval-opnfv`, were installed `__init__.py` (inside `perceval`)
+   were overwritten breaking the structure of the main package and making
+   Perceval unusable. This release defines `perceval` as a namespace. Due
+   to it, `fetch`, `find_backends` and other symbols are no longer accessible
+   from the main package.
+ * Mattermost backend added.
+
+
+## Perceval 0.10 - (2018-04-11)
+
+** New features and improvements: **
+
+ * Support for Python 3.5, 3.6.
+ * New set of backends added:
+   - **GitLab**
+   - **Launchpad**
+ * `Cache` was removed in favor of `Archive`. This new feature stores, in
+   SQLite databases, each data response received from a remote source. Thus,
+   it is possible to retrieve original data again without accessing the remote
+   source.
+ * A new generic HTTP client (`HttpClient`) is available and shared by those
+   backends which require to fetch data using that protocol. This client manages
+   rate limits, sleep times and retries in case of error. It is fully extensible
+   and configurable.
+ * With the integration of categories, backends would be able to generate
+   different types of items. For instance, GitHub generates issue and
+   pull request items. The option `--category` allows to set which type of
+   items will be fetched.
+ * Gmane site shut down its activity in July 2016. Although there were some
+   actions to revamp it, it is still down. For these reasons, Gmane backend
+   is no longer maintained and has been removed from the core backends.
+ * Tests were improved, specially, adding unit tests for Gerrit backend.
+ * Perceval and GrimoireLab project are now part of CHAOSS community.
+
+** Backend improvements: **
+
+ * **askbot**
+   - add data about accepted answers
+ * **gerrit**
+   - rename parameter URL to hostname
+ * **git**
+   - add `to-date` option to fetch data up to the given date
+   - run Git commands setting HOME environment variable
+   - clone data into a bare repository instead of a work copy
+ * **github**
+   - fetch issue comments
+   - fetch issue/comments reactions
+   - fetch multiple assignees
+   - fetch pull request category
+   - major refactoring reducing the number of requests sent by the client
+ * **phabricator**
+   - include project/user information in task transactions
+
+** Bugs fixed: **
+
+ * The process for discovering references in Git repositories failed
+   with those repositories which do not have any. (#260)
+ * When a local Git repository was analyzed by Perceval, the directory where
+   it was cloned was created inside the local repository. (#262)
+ * Sleep times when rate limit is in use were wrongly calculated in some
+   cases, generating negative values. (#355)
+ * Pipermail backend failed on inaccessible archive URLs. Now, it skips
+   those URLs generating warning messages. (#358)
+
+** Thanks to: **
+
+ * Anvesh Chaturvedi
+ * David Pose Fernández
+ * Prabhat Sharma
+
+
+## Perceval 0.9 - (2017-07-17)
+
+** New features and improvements: **
+
+ * DockerHub added as new backend.
+ * Fetch the latest commits added in a Git repository using
+   the argument `latest-items`.
+
+** Bugs fixed: **
+
+ * In Slack, comment messages were not processed raising an error
+   when their UUIDs were computed. These messages do not include a
+   'user' field on the top layer, which made the backed to fail.
+   This field can be found inside 'comment' key.
+ * Some versions of gerrit return number review as an integer.
+   This value must be converted to string because UUIDs can only be
+   generated using string values. (#144)
+
+
+## Perceval 0.8 - (2017-05-15)
+
+** New features and improvements: **
+
+ * Common functions used across GrimoireLab projects have been moved
+   to their own package. This package was named `grimoirelab-toolkit`.
+   From this version, Perceval depends on this package.
+
+** Backend improvements: **
+
+  * **askbot**
+    - support new URLs schema for comment queries
+  * **bugzilla**
+    - set `User-Agent` header in HTTP clients
+  * **confluence**
+    - add content URL to each item
+  * **gerrit**
+    - add option to disable SSH host keys checks
+  * **nntp**
+    - raise `ParseError` exceptions when an encoding error is found
+  * **rss**
+    - set `User-Agent` header in HTTP clients
+
+
+## Perceval 0.7 - (2017-03-21)
+
+** New features and improvements: **
+
+ * New set of backends added:
+    - Hyperkitty
+    - NNTP
+    - Slack
+ * `RateLimitError` exception added for handling rate limit errors.
+ * Code was cleaned to follow most of the PEP8 style guidelines.
+
+** Backend improvements: **
+
+  * **git**
+    - retry calls on SSH commands were added to avoid temporal server errors
+  * **github**
+    - HHTP 404 errors are managed when user's organizations are fetched
+    - generic `RateLimitError` exception is used
+
+** Bugs fixed: **
+
+ * In Mediawiki backend, the log messages written when a revision is not
+   found were set to ERROR when the real level should have been WARNING.
+ * The URL used to fetch jobs in Jenkins was not common to all servers.
+ * When UUIDs are generated with some input data, some errors may be raised
+   due to problems encoding invalid characters on the input. To avoid these
+   problems, a surrogate escape control error has been set when data is
+   encoded to UTF8. (#123)
+ * Handle Meetup requests rate limit. (#126)
+
+
+## Perceval 0.6 - (2017-02-02)
+
+** Backend improvements: **
+
+ * **bugzillarest**
+   - messages in client errors were improved
+ * **git**
+   - new method `is_detached()`
+ * **mbox**
+   - ignore messages with invalid dates on `Date` header
+ * **phabricator**
+   - retry requests on HTTP 502 and 503 errors
+
+** Bugs fixed: **
+
+ * The `mbox` class from Python's `mailbox` module fails when it tries to
+   decode non-ascii unix-from headers. This header is used as a separator
+   between messages. When this error is found, the class stops reading messages
+   from the mbox. Wrapping `mbox` class to override the way messages are read
+   was needed to catch the exception and decode the header using UTF-8.
+ * When a user does not exists on Phabricator, the API does not return an
+   error. It returns an empty list. The case where an empty list is returned
+   was not managed by the parser, which raised exceptions.
+ * In gerrit, the identifier of the change, `Change-Id` (or `id`), is not unique.
+   What it is unique in a gerrit sever is the number of each change and review.
+   This `number` is used now instead of `id` as the identifier of a review
+ * When Git repositories are reset to the current status on upstream, some of
+   them cannot deal with `origin` reference because it is ambiguous. Replacing
+   it by `FETCH_HEAD` works on those repositories with defined branches on
+   the origin.
+ * Git repositories in detached state do not need to be reset after `git fetch`
+   is called. This call is now skipped when a repository in this state
+   is in use. (#105)
+
+
+## Perceval 0.5 - (2017-01-17)
+
+** New features and improvements: **
+
+ * New set of backends added:
+    - Askbot
+    - Meetup
+    - RSS
+ * Definition of `perceval.backends` namespace and dynamic loading of backends.
+   These two features allow to have third party backends or packages of
+   backends that can be imported and used at runtime.
+ * Mozilla's backends were moved to their own package: `perceval-mozilla`.
+ * Commands were refactorized generalizing their usage into `BackendCommand`
+   class which can run any type of backend. This was possible thanks to the
+   creation of `BackendCommandArgumentParser` class, that defines, manages and
+   parses those arguments needed to run a command; the definition of `pre_init()`
+   and `post_init()` methods during the initialization of the instance; and to
+   the implementation of `setup_cache()` as a public function of the `cache`
+   module.
+
+** Backend improvements: **
+
+ * **bugzilla**
+   - set maximum number of bugs requested on CSV queries
+ * **git**
+   - parse commit trailers
+   - new methods `is_empty()` and `count_objects()`
+   - set missing encodings for the command output
+   - cleaning up of the module
+ * **jenkins**
+   - ignore invalid job builds
+ * **supybot**
+   - parse action and bot empty lines
+   - parse user actions with the format `*nick msg`
+   - generate item ids using the body of the message
+
+** Bugs fixed: **
+
+ * The field 'timestamp' on metadata was not generated in UTC. The call
+   to `datetime.now()` does not generate a timestamp in UTC. It does using
+   the timezone of the system. The right way is to call to `datetime.utcnow()`
+   method. (#92)
+ * The docker image for Perceval purged the git package after installing
+   `perceval`. This made impossible to run the backend for Git because
+   Perceval needs of `git` command under the hood. (#95)
+ * Git empty repositories threw errors while fetching commits. Those were
+   raised because on empty repositories, those which do not have any history
+   or are only initialized, there are some commands that cannot be run, like
+   a pull or log. If any of this commands is called an error is be returned.
+   It was fixed checking whether the repository is empty and returning
+   an empty list of commits for those cases. (#102 and #107)
+
+
+## Perceval 0.4 - (2016-11-03)
+
+** New features and improvements: **
+
+ * `category` field was added to items metadata to classify the type of
+   the item generated with each backend.
+ * The `tag` attribute added to the backends allows to mark the items
+   with a custom label.
+ * Two class methods, `has_caching` and `has_resuming`, are part now
+   of `Backend` class interface to notify whether a backend supports
+   caching and/or resuming of items.
+
+** Backend improvements: **
+
+ * **jenkins**
+   - support blacklist of jobs
+ * **mediawiki**
+   - use API pages methods by default
+ * **phabricator**
+   - fetch and include projects data assigned to each task
+ * **redmine**
+   - fetch and include users data
+ * **remo**
+   - support new version of the API
+ * **supybot**
+   - parse messages written by special bots
+
+** Bugs fixed: **
+
+ * Filepaths on merge commits were not captured on Git backend. This was
+   neccesary in those cases where merge commits only include data about
+   lines added and removed because the filepaths were not parsed and
+   included on the item data. (#63)
+ * The `url` argument on the Gerrit backend was set to optional. It is
+   mandatory. Thus, it was set to positional on the argument parser. (#60)
+ * Newer versions of Phabricator fixed a bug on API Conduit regarding
+   'constraints' parameter. The Phabricator client was modified to fix
+   this bug, too. (#80)
+ * Python's `requests` library decompresses gzip-encoded responses, but
+   in some cases is only able to decompress some parts due to encoding
+   issues or to mixed contents. This problem was fixed downloading and
+   storing the orinal/raw data (compressed or decompressed) for furthed
+   processing.
+ * Jira backend did not return items in order, from oldest to newest. (#89)
+ * Dates with invalid timezones were not parsed. In those cases, the
+   the dates will be converted usin UTC by default. (#73)
+
+
+## Perceval 0.3 - (2016-09-19)
+
+** New features and improvements: **
+
+ * New set of backends added:
+    - Phabricator
+    - Redmine
+ * Add support for creating PyPi packages
+
+** Backend improvements: **
+
+ * **jira**
+   - fetch additional information about custom fields
+ * **mediawiki**
+   - add a flag which ignores the MAX_RECENT_DAYS constraint when the
+     backend is tested
+
+** Bugs fixed: **
+
+ * Cache tests for Redmine backend checked the values retrieved from the
+   repository but not from the cache.
+ * Timestamps generated to fetch data from a given date included invalid
+   timezone information for Mediawiki API (>=1.27). It only works with Zulu
+   dates. (#54)
+ * Date strings that included information after the timezone were not parsed:
+   `Thu, 14 Aug 2008 02:07:59 +0200 CEST`. (#57)
+
+
+## Perceval 0.2 - (2016-07-20)
+
+** New features and improvements: **
+
+ * New set of backends added:
+    - Bugzilla (REST API)
+    - Confluence
+    - Discourse
+    - Gmane
+    - Jenkins
+    - Kitsune (Mozilla)
+    - Mediawiki
+    - Pipermail
+    - ReMo (Mozilla)
+    - Supybot
+    - Telegram
+ * The origin of the fetched data is configurable.
+ * Unit tests for GitHub, Jira and Stack Exchange were added. Other tests
+   were added and improved. Now, the unit tests framework covers a 83% of
+   the source code.
+
+** Backend improvements: **
+
+ * **gerrit**
+   - support server version 2.8
+ * **git**
+   - filtering by branches
+   - so far, the full log was read before parsing it; now, it is parsed and processed
+     while is being read
+ * **github**
+   - full control of GitHub API rate limit
+   - the program can be sent to sleep until the rate limit is reset again
+ * **mbox**
+   - fetches messages since a given date
+ * **pipermail**
+   - fetches messages from a *mod_mbox* interface (i.e: Apache)
+
+** Bugs fixed: **
+
+ * Dates that included parentheses sections were not parsed:
+   `2005 15:20:32 -0100 (GMT+1)`.
+ * An encoding error was raised when `version.py` module was imported. (#32)
+ * The call in chain of functions `utcnow()` and `timestamp()` from the
+   module `time`, produced wrong timezones on the GitHub backend.
+ * Action IRC messages (leading with a single `*`) were ignored. (#48)
+ * The `backoff` field received in a Stack Exchange API response was
+   ignored. When this field is set, any client must wait the number of
+   seconds specified on it before sending any new request.
+ * The query used in Gerrit to retrieve the reviews was badly formed when
+   the blacklist filter contained two or more reviews. (#50)
+
+
+## Perceval 0.1 - (2016-03-30)
+
+** New features and improvements: **
+
+ * Supports Python 3.4 and newer versions.
+ * Fetches and caches information from several software repositories:
+    - Bugzilla
+    - Gerrit
+    - Git
+    - GitHub
+    - Jira
+    - MBox
+    - Stack Exchange
+ * Metadata fields are added to fetched items.
+ * Dates and times used to request data are always converted to UTC.
+ * Unit testing framework is available. Currently, these
+   unit tests cover the 62% of the source code.
+
+** Bugs fixed: **
+
+ * Some Git commit log entries may not contain information about files.
+   Before this was fixed, Perceval raised an exception with a "_Unexpected
+   end of log stream_" message. (#8)
+ * Empty Git commit logs raised erros when were parsed. (#17)
+ * Character ^M) produced some parsing errors in the Git backend. (#21)

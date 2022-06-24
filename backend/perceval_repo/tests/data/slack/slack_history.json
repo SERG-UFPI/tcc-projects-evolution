@@ -1,0 +1,63 @@
+{
+    "has_more": true,
+    "messages": [
+        {
+           "comment": {
+               "comment": "Thanks.",
+               "created": 1486999900.000000,
+               "id": "ABCDEFGHI",
+               "is_intro": false,
+               "timestamp": 1486999900,
+               "user": "U0003"
+           },
+           "file": {
+               "lines": 17,
+               "username": ""
+           },
+           "is_intro": false,
+           "subtype": "file_comment",
+           "text": "<@U0003|dizquierdo> commented on <@U0002|acs> file>: Thanks.",
+           "ts": "1486999900.000000",
+           "type": "message"
+        },
+        {
+            "bot_id": "B0001",
+            "subtype": "bot_message",
+            "text": "There are no events this week.",
+            "ts": "1486969200.000136",
+            "type": "message"
+        },
+        {
+            "subtype": "channel_join",
+            "text": "<@U0003|dizquierdo> has joined the channel",
+            "ts": "1427799888.000000",
+            "type": "message",
+            "user": "U0003"
+        },
+        {
+            "text": "tengo el m\u00f3vil",
+            "ts": "1427135890.000071",
+            "type": "message",
+            "user": "U0002"
+        },
+        {
+            "text": "hey acs",
+            "ts": "1427135835.000070",
+            "type": "message",
+            "user": "U0002"
+        },
+        {
+            "text": "¿vale?",
+            "ts": "1427135740.000069",
+            "type": "message",
+            "user": "U0001"
+        },
+        {
+            "text": "jsmanrique: tenemos que dar m\u00e9tricas super chulas",
+            "ts": "1427135733.000068",
+            "type": "message",
+            "user": "U0001"
+        }
+    ],
+    "ok": true
+}
