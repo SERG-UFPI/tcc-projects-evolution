@@ -1,0 +1,21 @@
+name: Node.js Deploy Main
+on:
+  push:
+    branches:
+      - dev
+    paths:
+      - frontend/**
+      
+jobs:
+  deploy:
+    name: Deploy Frontend to Heroku (dev)
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+      - name: Add remote origin
+        run: git remote add heroku https://heroku:${{ secrets.HEROKU_API_KEY }}@git.heroku.com/${{ secrets.HEROKU_APP_NAME }}.git
+      - name: Deploy to Heroku
+        run: git push --force heroku `git subtree split --prefix frontend HEAD`:dev
+

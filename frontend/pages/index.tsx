@@ -173,7 +173,7 @@ export default function Home() {
                 textinfo: "label+percent",
                 textposition: "inside",
                 automargin: true,
-                title: "Autores de Issues"
+                //title: "Autores de Issues"
               },
             ]}
               layout={
