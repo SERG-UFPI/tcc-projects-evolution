@@ -82,7 +82,7 @@ export default function Home() {
   return (
     <div className={styles.home}>
       <div className={styles.header}>
-        <span className={styles.title}>TCC Alexander</span>
+        <span className={styles.title}>TCC Projects Evolution</span>
         <div className={styles.repoInput}>
           <input placeholder='Link do repositório' className={styles.input}
             onChange={(ev) => {
@@ -106,7 +106,7 @@ export default function Home() {
           </button>
         </div>
         <span className={styles.description}>
-          Aplicação para ver a evolução de projetos de ES2
+          App para ver a evolução de projetos de ES2.
         </span>
       </div>
       {!isDataReady ? (
