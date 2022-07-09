@@ -39,10 +39,8 @@ export default function Home() {
       parsedEnd = end.replace(/-/g, "")
     }
     
-    //const response = await axios.get(`https://tcc-eng-api.herokuapp.com/info/${urlParts[urlParts.length - 2]}/${urlParts[urlParts.length - 1]}`)
-    //const response = await axios.get(`http://18.207.222.22/info/issues-dates/${urlParts[urlParts.length - 2]}/${urlParts[urlParts.length - 1]}`)
-    const response = await axios.get(`http://18.207.222.22/info/issues-dates/${urlParts[urlParts.length - 2]}/${urlParts[urlParts.length - 1]}?start=${parsedStart}&end=${parsedEnd}`)
-    const authorsResponse  = await axios.get(`http://18.207.222.22/info/issues-authors/${urlParts[urlParts.length - 2]}/${urlParts[urlParts.length - 1]}`)
+    const response = await axios.get(`http://18.210.151.218/info/issues-dates/${urlParts[urlParts.length - 2]}/${urlParts[urlParts.length - 1]}?start=${parsedStart}&end=${parsedEnd}`)
+    const authorsResponse  = await axios.get(`http://18.210.151.218/info/issues-authors/${urlParts[urlParts.length - 2]}/${urlParts[urlParts.length - 1]}`)
     const dateCreatedList = []
     const dateClosedList = []
     const occurrencesByDateCreated = []
