@@ -15,7 +15,7 @@ load_dotenv()
 
 @app.route('/')
 def home():
-    return "<h1>Projeto TCC & Eng 2!!!</h1>"
+    return "<h1>Projeto TCC & Eng 2</h1>"
 
 
 @app.route('/info/<owner>/<repo>')
@@ -147,12 +147,12 @@ def count_files_changed(date, key, count):
 def total_files_changed(dates, authors_files, begin=None, final=None):
     for date in dates:
         for key in date:
-            if(begin == None and final == None):
+            if(begin is None and final is None):
                 count_files_changed(date, key, authors_files)
-            elif(begin and final == None):
+            elif(begin and final is None):
                 if key >= begin:
                     count_files_changed(date, key, authors_files)
-            elif(begin == None and final):
+            elif(begin is None and final):
                 if key <= final:
                     count_files_changed(date, key, authors_files)
             else:
@@ -203,12 +203,12 @@ def filter_issues_by_dates(dates, begin=None, final=None):
     issues_by_dates = {}
 
     for key in dates:
-        if(begin == None and final == None):
+        if(begin is None and final is None):
             issues_by_dates.update({key: dates[key]})
-        elif(begin and final == None):
+        elif(begin and final is None):
             if key >= begin:
                 issues_by_dates.update({key: dates[key]})
-        elif(begin == None and final):
+        elif(begin is None and final):
             if key <= final:
                 issues_by_dates.update({key: dates[key]})
         else:
@@ -253,4 +253,4 @@ def issues_authors(owner, repo):
 
 
 if __name__ == "__main__":
-    serve(app, host='0.0.0.0', port=80)
+    serve(app, host='0.0.0.0', port=50)
