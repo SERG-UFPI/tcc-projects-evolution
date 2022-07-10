@@ -15,7 +15,7 @@ load_dotenv()
 
 @app.route('/')
 def home():
-    return "<h1>Projeto TCC & Eng 2!!</h1>"
+    return "<h1>Projeto TCC & Eng 2</h1>"
 
 
 @app.route('/info/<owner>/<repo>')
