@@ -1,7 +1,8 @@
-import dynamic from 'next/dynamic';
-import styles from '../styles/Home.module.css';
-import { useEffect, useState } from 'react';
 import axios from 'axios';
+import dynamic from 'next/dynamic';
+import Head from 'next/head';
+import { useState } from 'react';
+import styles from '../styles/Home.module.css';
 
 const Plot = dynamic(() => import('react-plotly.js'), {
   ssr: false,
@@ -9,7 +10,6 @@ const Plot = dynamic(() => import('react-plotly.js'), {
 });
 
 export default function Home() {
-  const [title, setTitle] = useState('Projects Evolution');
   const [createdAt, setCreatedAt] = useState([]);
   const [countCreatedAt, setCountCreatedAt] = useState([]);
   const [closedAt, setClosedAt] = useState([]);
@@ -47,7 +47,7 @@ export default function Home() {
     const authorsResponse = await axios.get(
       `https://18.210.151.218.nip.io/info/issues-authors/${
         urlParts[urlParts.length - 2]
-      }/${urlParts[urlParts.length - 1]}`
+      }/${urlParts[urlParts.length - 1]}?start=${parsedStart}&end=${parsedEnd}`
     );
     const dateCreatedList = [];
     const dateClosedList = [];
@@ -86,12 +86,13 @@ export default function Home() {
     setIsDataReady(true);
   };
 
-  useEffect(() => {
-    document.title = title;
-  }, [title]);
-
   return (
     <div className={styles.home}>
+      <div>
+        <Head>
+          <title>Projects Evolution</title>
+        </Head>
+      </div>
       <div className={styles.header}>
         <span className={styles.title}>TCC Projects Evolution</span>
         <div className={styles.repoInput}>
