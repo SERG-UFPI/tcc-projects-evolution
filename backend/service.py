@@ -170,7 +170,9 @@ def issues_dates(owner, repo, begin=None, final=None):
     for issue in data['issues']:
         dates_created.append(issue['created_at'].split('T')[
                              0].replace('-', ''))
-        dates_closed.append(issue['closed_at'].split('T')[0].replace('-', ''))
+        if issue['closed_at'] is not None:
+            dates_closed.append(issue['closed_at'].split('T')[
+                                0].replace('-', ''))
 
     parse_dates_same_day(count, dates_created, "created")
     parse_dates_same_day(count, dates_closed, "closed")
@@ -227,7 +229,6 @@ def get_commits_by_date(owner, repo, begin=None, final=None):
                 if key >= begin and key <= final:
                     authors.append(commit[key]['author'])
 
-    
     non_repeated_authors = remove_duplicates(authors)
     non_repeated_authors.sort()
 
