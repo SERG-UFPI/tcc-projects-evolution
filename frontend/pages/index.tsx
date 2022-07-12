@@ -16,6 +16,8 @@ export default function Home() {
   const [countClosedAt, setCountClosedAt] = useState([]);
   const [authors, setAuthors] = useState([]);
   const [authorsTotalIssues, setAuthorsTotalIssues] = useState([]);
+  const [commits, setCommits] = useState([]);
+  const [authorsTotalCommits, setAuthorsTotalCommits] = useState([]);
   const [showPlot, setShowPlot] = useState(false);
   const [repoUrl, setRepoUrl] = useState('');
   const [start, setStart] = useState('');
@@ -49,6 +51,11 @@ export default function Home() {
         urlParts[urlParts.length - 2]
       }/${urlParts[urlParts.length - 1]}?start=${parsedStart}&end=${parsedEnd}`
     );
+    const commitsResponse = await axios.get(
+      `https://18.210.151.218.nip.io/info/commits-authors/${
+        urlParts[urlParts.length - 2]
+      }/${urlParts[urlParts.length - 1]}?start=${parsedStart}&end=${parsedEnd}`
+    );
     const dateCreatedList = [];
     const dateClosedList = [];
     const occurrencesByDateCreated = [];
@@ -76,12 +83,21 @@ export default function Home() {
       authorsTotalIssuesList.push(authorsResponse.data[key]);
     });
 
+    const commitsList = [];
+    const commitsTotalList = [];
+    Object.keys(commitsResponse.data).forEach((key) => {
+      commitsList.push(key);
+      commitsTotalList.push(commitsResponse.data[key]);
+    });
+
     setCreatedAt([...dateCreatedList]);
     setCountCreatedAt([...occurrencesByDateCreated]);
     setClosedAt([...dateClosedList]);
     setCountClosedAt([...occurrencesByDateClosed]);
     setAuthors([...authorsList]);
     setAuthorsTotalIssues([...authorsTotalIssuesList]);
+    setCommits([...commitsList]);
+    setAuthorsTotalCommits([...commitsTotalList]);
 
     setIsDataReady(true);
   };
@@ -136,6 +152,29 @@ export default function Home() {
         <div className={styles.pageComponents}>
           <>
             <div className={styles.plot}>
+              <p>Autores de Issues</p>
+              <Plot
+                data={[
+                  {
+                    type: 'pie',
+                    values: authorsTotalIssues,
+                    labels: authors,
+                    textinfo: 'label+percent',
+                    textposition: 'inside',
+                    automargin: true,
+                  },
+                ]}
+                layout={{
+                  height: 400,
+                  width: 400,
+                  margin: { t: 50, b: 50, l: 0, r: 0 },
+                  showlegend: false,
+                }}
+              />
+            </div>
+          </>
+          <>
+            <div className={styles.plot}>
               <Plot
                 data={[
                   {
@@ -184,13 +223,13 @@ export default function Home() {
           </>
           <>
             <div className={styles.plot}>
-              <p>Autores de Issues</p>
+              <p>Autores de Commits</p>
               <Plot
                 data={[
                   {
                     type: 'pie',
-                    values: authorsTotalIssues,
-                    labels: authors,
+                    values: authorsTotalCommits,
+                    labels: commits,
                     textinfo: 'label+percent',
                     textposition: 'inside',
                     automargin: true,
@@ -204,9 +243,6 @@ export default function Home() {
                 }}
               />
             </div>
-            {/* <button className={styles.button} onClick={() => {
-            setShowPlot(!showPlot)
-          }}>{showPlot ? 'Mostrar issues abertas' : 'Mostrar issues fechadas'}</button> */}
           </>
         </div>
       )}
