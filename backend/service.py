@@ -1,7 +1,8 @@
 import json
 import os
-from perceval_repo.perceval.backends.core.github import GitHub
+from datetime import datetime
 from perceval_repo.perceval.backends.core.git import Git
+from perceval_repo.perceval.backends.core.github import GitHub
 
 
 def parse_arrays(arr, key):
@@ -203,5 +204,34 @@ def issues_authors(owner, repo, begin=None, final=None):
 
     for i in non_repeated_creators:
         count[str(i)] = creators.count(i)
+
+    return count
+
+
+def get_commits_by_date(owner, repo, begin=None, final=None):
+    data = json.loads(get_commits(owner, repo))
+    authors = []
+    count = {}
+
+    for commit in data['commits']:
+        for key in commit:
+            if(begin is None and final is None):
+                authors.append(commit[key]['author'])
+            elif(begin and final is None):
+                if key >= begin:
+                    authors.append(commit[key]['author'])
+            elif(begin is None and final):
+                if key <= final:
+                    authors.append(commit[key]['author'])
+            else:
+                if key >= begin and key <= final:
+                    authors.append(commit[key]['author'])
+
+    
+    non_repeated_authors = remove_duplicates(authors)
+    non_repeated_authors.sort()
+
+    for i in non_repeated_authors:
+        count[str(i)] = authors.count(i)
 
     return count
