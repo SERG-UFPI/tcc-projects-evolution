@@ -18,6 +18,7 @@ export default function Home() {
   const [authorsTotalIssues, setAuthorsTotalIssues] = useState([]);
   const [commits, setCommits] = useState([]);
   const [authorsTotalCommits, setAuthorsTotalCommits] = useState([]);
+  const [lifetimeValues, setlifetimeValues] = useState([]);
   const [showPlot, setShowPlot] = useState(false);
   const [repoUrl, setRepoUrl] = useState('');
   const [start, setStart] = useState('');
@@ -34,9 +35,13 @@ export default function Home() {
     if (!start && !end) {
       parsedStart = '';
       parsedEnd = '';
-    } else if (start && !end) parsedStart = start.replace(/-/g, '');
-    else if (!start && end) parsedEnd = end.replace(/-/g, '');
-    else {
+    } else if (start && !end) {
+      parsedStart = start.replace(/-/g, '');
+      parsedEnd = '';
+    } else if (!start && end) {
+      parsedStart = '';
+      parsedEnd = end.replace(/-/g, '');
+    } else {
       parsedStart = start.replace(/-/g, '');
       parsedEnd = end.replace(/-/g, '');
     }
@@ -56,6 +61,12 @@ export default function Home() {
         urlParts[urlParts.length - 2]
       }/${urlParts[urlParts.length - 1]}?start=${parsedStart}&end=${parsedEnd}`
     );
+    const issuesLifetimeResponse = await axios.get(
+      `https://18.210.151.218.nip.io/info/issues-lifetime/${
+        urlParts[urlParts.length - 2]
+      }/${urlParts[urlParts.length - 1]}?start=${parsedStart}&end=${parsedEnd}`
+    );
+
     const dateCreatedList = [];
     const dateClosedList = [];
     const occurrencesByDateCreated = [];
@@ -90,6 +101,11 @@ export default function Home() {
       commitsTotalList.push(commitsResponse.data[key]);
     });
 
+    const lifetimeValues = [];
+    issuesLifetimeResponse.data['issues'].forEach((el) => {
+      lifetimeValues.push(el.active_days);
+    });
+
     setCreatedAt([...dateCreatedList]);
     setCountCreatedAt([...occurrencesByDateCreated]);
     setClosedAt([...dateClosedList]);
@@ -98,6 +114,7 @@ export default function Home() {
     setAuthorsTotalIssues([...authorsTotalIssuesList]);
     setCommits([...commitsList]);
     setAuthorsTotalCommits([...commitsTotalList]);
+    setlifetimeValues([...lifetimeValues]);
 
     setIsDataReady(true);
   };
@@ -152,29 +169,6 @@ export default function Home() {
         <div className={styles.pageComponents}>
           <>
             <div className={styles.plot}>
-              <p>Autores de Issues</p>
-              <Plot
-                data={[
-                  {
-                    type: 'pie',
-                    values: authorsTotalIssues,
-                    labels: authors,
-                    textinfo: 'label+percent',
-                    textposition: 'inside',
-                    automargin: true,
-                  },
-                ]}
-                layout={{
-                  height: 400,
-                  width: 400,
-                  margin: { t: 50, b: 50, l: 0, r: 0 },
-                  showlegend: false,
-                }}
-              />
-            </div>
-          </>
-          <>
-            <div className={styles.plot}>
               <Plot
                 data={[
                   {
@@ -220,6 +214,62 @@ export default function Home() {
             {/* <button className={styles.button} onClick={() => {
             setShowPlot(!showPlot)
           }}>{showPlot ? 'Mostrar issues abertas' : 'Mostrar issues fechadas'}</button> */}
+          </>
+          <>
+            <div className={styles.plot}>
+              <Plot
+                data={[
+                  {
+                    type: 'violin',
+                    y: lifetimeValues,
+                    points: false,
+                    box: {
+                      visible: true,
+                    },
+                    boxpoints: false,
+                    line: {
+                      color: 'black',
+                    },
+                    fillcolor: '#8dd3c7',
+                    opacity: 0.6,
+                    meanline: {
+                      visible: true,
+                    },
+                    x0: 'Qtd. Issues',
+                  },
+                ]}
+                layout={{
+                  title: 'Tempo de Vida',
+                  yaxis: {
+                    zeroline: false,
+                    title: 'Dias',
+                  },
+                }}
+              />
+            </div>
+          </>
+          <>
+            <div className={styles.plot}>
+              <p>Autores de Issues</p>
+              <Plot
+                data={[
+                  {
+                    type: 'pie',
+                    values: authorsTotalIssues,
+                    labels: authors,
+                    textinfo: 'label+percent',
+                    textposition: 'inside',
+                    automargin: true,
+                  },
+                ]}
+                layout={{
+                  height: 400,
+                  width: 400,
+                  margin: { t: 50, b: 50, l: 0, r: 0 },
+                  showlegend: false,
+                }}
+              />
+            </div>
           </>
           <>
             <div className={styles.plot}>
