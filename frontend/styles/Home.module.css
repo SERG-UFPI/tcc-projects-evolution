@@ -59,7 +59,7 @@
   border-radius: 5px;
   background-color: #fafafa;
   box-shadow: 0 0 10px rgba(33,33,33,.2);
-  margin-bottom: 20px; 
+  margin-bottom: 20px;
 }
 
 .plot p {
@@ -72,12 +72,26 @@
 
 .pageComponents {
   display: flex;
+  flex-direction: column;
+  width: 100%; 
+}
+
+.issuesContainer {
+  display: flex;
   flex-direction: row;
   width: 100%;
   justify-content: space-evenly;
   flex-wrap: wrap;
 }
 
-/* .description {
+.commitsContainer {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  justify-content: space-evenly;
+  flex-wrap: wrap;
+}
 
-} */
+.pageComponents hr {
+  width: 100%;
+}

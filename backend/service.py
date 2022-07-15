@@ -64,10 +64,19 @@ def get_commits(owner, repo):
 
         author = commit['data']['Author'].split(' <')[0]
 
+        added = 0
+        removed = 0
+        for files in commit['data']['files']:
+            if(not files['added'] == '-' and not files['removed'] == '-'):
+                added += int(files['added'])
+                removed += int(files['removed'])
+    
         info = {
             date: {
                 'author': author,
-                'files_changed': len(commit['data']['files'])
+                'files_changed': len(commit['data']['files']),
+                'lines_added': added,
+                'lines_removed': removed
             }
         }
         aux.append(info)
@@ -257,6 +266,8 @@ def issues_lifetime(owner, repo, begin=None, final=None):
                     issues.append(
                         {"number": issue['number'], "active_days": difference})
 
+    # issues.append({"number": -1, "total_issues": total_issues,
+    #               "average": round(average/total_issues)})
     result['issues'] = issues
 
     return json.dumps(result)

@@ -19,6 +19,9 @@ export default function Home() {
   const [commits, setCommits] = useState([]);
   const [authorsTotalCommits, setAuthorsTotalCommits] = useState([]);
   const [lifetimeValues, setlifetimeValues] = useState([]);
+  const [addedFiles, setAddedFiles] = useState([]);
+  const [removedFiles, setRemovedFiles] = useState([]);
+  const [dateCommits, setDateCommits] = useState([]);
   const [showPlot, setShowPlot] = useState(false);
   const [repoUrl, setRepoUrl] = useState('');
   const [start, setStart] = useState('');
@@ -56,13 +59,18 @@ export default function Home() {
         urlParts[urlParts.length - 2]
       }/${urlParts[urlParts.length - 1]}?start=${parsedStart}&end=${parsedEnd}`
     );
-    const commitsResponse = await axios.get(
+    const issuesLifetimeResponse = await axios.get(
+      `https://18.210.151.218.nip.io/info/issues-lifetime/${
+        urlParts[urlParts.length - 2]
+      }/${urlParts[urlParts.length - 1]}?start=${parsedStart}&end=${parsedEnd}`
+    );
+    const commitsAuthorsResponse = await axios.get(
       `https://18.210.151.218.nip.io/info/commits-authors/${
         urlParts[urlParts.length - 2]
       }/${urlParts[urlParts.length - 1]}?start=${parsedStart}&end=${parsedEnd}`
     );
-    const issuesLifetimeResponse = await axios.get(
-      `https://18.210.151.218.nip.io/info/issues-lifetime/${
+    const commitsResponse = await axios.get(
+      `https://18.210.151.218.nip.io/info/commits/${
         urlParts[urlParts.length - 2]
       }/${urlParts[urlParts.length - 1]}?start=${parsedStart}&end=${parsedEnd}`
     );
@@ -94,11 +102,11 @@ export default function Home() {
       authorsTotalIssuesList.push(authorsResponse.data[key]);
     });
 
-    const commitsList = [];
-    const commitsTotalList = [];
-    Object.keys(commitsResponse.data).forEach((key) => {
-      commitsList.push(key);
-      commitsTotalList.push(commitsResponse.data[key]);
+    const commitsAuthorsList = [];
+    const commitsAuthorsTotalList = [];
+    Object.keys(commitsAuthorsResponse.data).forEach((key) => {
+      commitsAuthorsList.push(key);
+      commitsAuthorsTotalList.push(commitsAuthorsResponse.data[key]);
     });
 
     const lifetimeValues = [];
@@ -106,15 +114,37 @@ export default function Home() {
       lifetimeValues.push(el.active_days);
     });
 
+    const addedFiles = [];
+    const removedFiles = [];
+    const dates = [];
+    Object.keys(commitsResponse.data).forEach((key) => {
+      commitsResponse.data[key].forEach((el) => {
+        Object.keys(el).forEach((date) => {
+          const parsed =
+            date.slice(0, 4) + '-' + date.slice(4, 6) + '-' + date.slice(6, 8);
+          dates.push(parsed);
+          addedFiles.push(el[date]['lines_added']);
+          removedFiles.push(-el[date]['lines_removed']);
+        });
+      });
+    });
+
+    console.log(dates)
+    console.log(addedFiles)
+    console.log(removedFiles)
+
     setCreatedAt([...dateCreatedList]);
     setCountCreatedAt([...occurrencesByDateCreated]);
     setClosedAt([...dateClosedList]);
     setCountClosedAt([...occurrencesByDateClosed]);
     setAuthors([...authorsList]);
     setAuthorsTotalIssues([...authorsTotalIssuesList]);
-    setCommits([...commitsList]);
-    setAuthorsTotalCommits([...commitsTotalList]);
+    setCommits([...commitsAuthorsList]);
+    setAuthorsTotalCommits([...commitsAuthorsTotalList]);
     setlifetimeValues([...lifetimeValues]);
+    setDateCommits([...dates]);
+    setAddedFiles([...addedFiles]);
+    setRemovedFiles([...removedFiles]);
 
     setIsDataReady(true);
   };
@@ -167,133 +197,166 @@ export default function Home() {
         <span>O gráfico aparecerá aqui.</span>
       ) : (
         <div className={styles.pageComponents}>
-          <>
-            <div className={styles.plot}>
-              <Plot
-                data={[
-                  {
-                    x: createdAt,
-                    y: countCreatedAt,
-                    type: 'bar',
-                    name: 'Criadas',
-                    marker: {
-                      color: 'rgb(58, 156, 31)',
+          <h2 style={{ textAlign: 'center' }}>Issues</h2>
+          <div className={styles.issuesContainer}>
+            <>
+              <div className={styles.plot}>
+                <Plot
+                  data={[
+                    {
+                      x: createdAt,
+                      y: countCreatedAt,
+                      type: 'bar',
+                      name: 'Criadas',
+                      marker: {
+                        color: 'rgb(58, 156, 31)',
+                      },
                     },
-                  },
-                  {
-                    x: closedAt,
-                    y: countClosedAt,
+                    {
+                      x: closedAt,
+                      y: countClosedAt,
 
-                    type: 'bar',
-                    name: 'Fechadas',
-                    marker: {
-                      color: 'rgb(242, 47, 36)',
+                      type: 'bar',
+                      name: 'Fechadas',
+                      marker: {
+                        color: 'rgb(242, 47, 36)',
+                      },
                     },
-                  },
-                ]}
-                layout={{
-                  barmode: 'stack',
-                  title: 'Issues',
-                  font: {
-                    family: 'Arial, sans-serif',
-                    color: '#111111',
-                  },
-                  xaxis: {
-                    type: 'date',
-                    title: 'Datas',
-                  },
-                  yaxis: {
-                    title: 'Quantidade de issues',
-                  },
-                  plot_bgcolor: '#fafafa',
-                  paper_bgcolor: '#fafafa',
-                  width: 550,
-                }}
-              />
-            </div>
-            {/* <button className={styles.button} onClick={() => {
+                  ]}
+                  layout={{
+                    barmode: 'stack',
+                    title: 'Issues',
+                    font: {
+                      family: 'Arial, sans-serif',
+                      color: '#111111',
+                    },
+                    xaxis: {
+                      type: 'date',
+                      title: 'Datas',
+                    },
+                    yaxis: {
+                      title: 'Quantidade de issues',
+                    },
+                    plot_bgcolor: '#fafafa',
+                    paper_bgcolor: '#fafafa',
+                    width: 550,
+                  }}
+                />
+              </div>
+              {/* <button className={styles.button} onClick={() => {
             setShowPlot(!showPlot)
           }}>{showPlot ? 'Mostrar issues abertas' : 'Mostrar issues fechadas'}</button> */}
-          </>
-          <>
-            <div className={styles.plot}>
-              <Plot
-                data={[
-                  {
-                    type: 'violin',
-                    y: lifetimeValues,
-                    points: false,
-                    box: {
-                      visible: true,
+            </>
+            <>
+              <div className={styles.plot}>
+                <Plot
+                  data={[
+                    {
+                      type: 'violin',
+                      y: lifetimeValues,
+                      points: false,
+                      box: {
+                        visible: true,
+                      },
+                      boxpoints: false,
+                      line: {
+                        color: 'black',
+                      },
+                      fillcolor: '#8dd3c7',
+                      opacity: 0.6,
+                      meanline: {
+                        visible: true,
+                      },
+                      x0: 'Qtd. Issues',
                     },
-                    boxpoints: false,
-                    line: {
-                      color: 'black',
+                  ]}
+                  layout={{
+                    title: 'Issues Lifetime',
+                    yaxis: {
+                      zeroline: false,
+                      title: 'Dias',
                     },
-                    fillcolor: '#8dd3c7',
-                    opacity: 0.6,
-                    meanline: {
-                      visible: true,
+                  }}
+                />
+              </div>
+            </>
+            <>
+              <div className={styles.plot}>
+                <p>Autores de Issues</p>
+                <Plot
+                  data={[
+                    {
+                      type: 'pie',
+                      values: authorsTotalIssues,
+                      labels: authors,
+                      textinfo: 'label+percent',
+                      textposition: 'inside',
+                      automargin: true,
                     },
-                    x0: 'Qtd. Issues',
-                  },
-                ]}
-                layout={{
-                  title: 'Tempo de Vida',
-                  yaxis: {
-                    zeroline: false,
-                    title: 'Dias',
-                  },
-                }}
-              />
-            </div>
-          </>
-          <>
-            <div className={styles.plot}>
-              <p>Autores de Issues</p>
-              <Plot
-                data={[
-                  {
-                    type: 'pie',
-                    values: authorsTotalIssues,
-                    labels: authors,
-                    textinfo: 'label+percent',
-                    textposition: 'inside',
-                    automargin: true,
-                  },
-                ]}
-                layout={{
-                  height: 400,
-                  width: 400,
-                  margin: { t: 50, b: 50, l: 0, r: 0 },
-                  showlegend: false,
-                }}
-              />
-            </div>
-          </>
-          <>
-            <div className={styles.plot}>
-              <p>Autores de Commits</p>
-              <Plot
-                data={[
-                  {
-                    type: 'pie',
-                    values: authorsTotalCommits,
-                    labels: commits,
-                    textinfo: 'label+percent',
-                    textposition: 'inside',
-                    automargin: true,
-                  },
-                ]}
-                layout={{
-                  height: 400,
-                  width: 400,
-                  margin: { t: 50, b: 50, l: 0, r: 0 },
-                  showlegend: false,
-                }}
-              />
-            </div>
-          </>
+                  ]}
+                  layout={{
+                    height: 400,
+                    width: 400,
+                    margin: { t: 50, b: 50, l: 0, r: 0 },
+                    showlegend: false,
+                  }}
+                />
+              </div>
+            </>
+          </div>
+          <hr />
+          <h2 style={{ textAlign: 'center' }}>Commits</h2>
+          <div className={styles.commitsContainer}>
+            <>
+              <div className={styles.plot}>
+                <p>Autores de Commits</p>
+                <Plot
+                  data={[
+                    {
+                      type: 'pie',
+                      values: authorsTotalCommits,
+                      labels: commits,
+                      textinfo: 'label+percent',
+                      textposition: 'inside',
+                      automargin: true,
+                    },
+                  ]}
+                  layout={{
+                    height: 400,
+                    width: 400,
+                    margin: { t: 50, b: 50, l: 0, r: 0 },
+                    showlegend: false,
+                  }}
+                />
+              </div>
+            </>
+            <>
+              <div className={styles.plot}>
+                <p>Linhas Adicionadas e Removidas</p>
+                <Plot
+                  data={[
+                    {
+                      y: addedFiles,
+                      x: dateCommits,
+                      fill: 'tozeroy',
+                      type: 'scatter',
+                      mode: 'none',
+                    },
+                    {
+                      y: removedFiles,
+                      x: dateCommits,
+                      fill: 'tozeroy',
+                      type: 'scatter',
+                      mode: 'none',
+                    }
+                  ]}
+                  layout={{
+                    title: '',
+                  }}
+                />
+              </div>
+            </>
+          </div>
         </div>
       )}
     </div>

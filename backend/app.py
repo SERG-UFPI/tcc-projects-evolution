@@ -51,6 +51,7 @@ def show_issues_authors(owner, repo):
     result = issues_authors(owner, repo, start, end)
     return result
 
+
 # Retorna a quantidade de dias que as issues passaram desde abertas até fechadas
 @app.route('/info/issues-lifetime/<owner>/<repo>')
 def show_issues_lifetime(owner, repo):
