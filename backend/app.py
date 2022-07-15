@@ -3,7 +3,7 @@ from flask import Flask, request
 from flask_cors import CORS
 from waitress import serve
 from service import (get_commits, get_commits_by_date, get_issues, get_total_changes_by_time,
-                     issues_authors, issues_dates)
+                     issues_authors, issues_dates, issues_lifetime)
 
 app = Flask(__name__)
 CORS(app)
@@ -51,6 +51,20 @@ def show_issues_authors(owner, repo):
     result = issues_authors(owner, repo, start, end)
     return result
 
+# Retorna a quantidade de dias que as issues passaram desde abertas até fechadas
+@app.route('/info/issues-lifetime/<owner>/<repo>')
+def show_issues_lifetime(owner, repo):
+    start = request.args.get('start')
+    end = request.args.get('end')
+
+    if(start == ''):
+        start = None
+    if(end == ''):
+        end = None
+
+    result = issues_lifetime(owner, repo, start, end)
+    return result
+
 
 # Retorna as datas com as info de autor do commit e quantidade de arquivos modificados
 @app.route('/info/commits/<owner>/<repo>')
@@ -59,6 +73,7 @@ def show_total_commits(owner, repo):
     return result
 
 
+# Retorna a quantidade de commits realizados por cada participante do projeto
 @app.route('/info/commits-authors/<owner>/<repo>')
 def show_commits_by_date(owner, repo):
     start = request.args.get('start')

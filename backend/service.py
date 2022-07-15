@@ -210,6 +210,58 @@ def issues_authors(owner, repo, begin=None, final=None):
     return count
 
 
+def difference_between_dates(date1, date2):
+    d1 = datetime.strptime(date1, "%Y-%m-%d")
+    d2 = datetime.strptime(date2, "%Y-%m-%d")
+
+    delta = d2 - d1
+    return delta.days
+
+
+def issues_lifetime(owner, repo, begin=None, final=None):
+    data = json.loads(get_issues(owner, repo))
+    issues = []
+    result = {}
+    average = 0
+    total_issues = 0
+
+    for issue in data['issues']:
+        if(issue['state'] == 'closed'):
+            created = issue['created_at'].split('T')
+            closed = issue['closed_at'].split('T')
+
+            date = issue['closed_at'].split('T')[0].replace('-', '')
+            difference = difference_between_dates(created[0], closed[0])
+
+            if(begin is None and final is None):
+                total_issues += 1
+                average += difference
+                issues.append(
+                    {"number": issue['number'], "active_days": difference})
+            elif(begin and final is None):
+                if date >= begin:
+                    total_issues += 1
+                    average += difference
+                    issues.append(
+                        {"number": issue['number'], "active_days": difference})
+            elif(begin is None and final):
+                if date <= final:
+                    total_issues += 1
+                    average += difference
+                    issues.append(
+                        {"number": issue['number'], "active_days": difference})
+            else:
+                if date >= begin and date <= final:
+                    total_issues += 1
+                    average += difference
+                    issues.append(
+                        {"number": issue['number'], "active_days": difference})
+
+    result['issues'] = issues
+
+    return json.dumps(result)
+
+
 def get_commits_by_date(owner, repo, begin=None, final=None):
     data = json.loads(get_commits(owner, repo))
     authors = []
