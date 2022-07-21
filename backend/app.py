@@ -2,8 +2,8 @@ from dotenv import load_dotenv
 from flask import Flask, request
 from flask_cors import CORS
 from waitress import serve
-from service import (get_commits, get_commits_by_date, get_issues, get_total_changes_by_time,
-                     issues_authors, issues_dates, issues_lifetime)
+from service import (get_commits, get_issues,
+                     issues_authors_lifetime, issues_dates)
 
 app = Flask(__name__)
 CORS(app)
@@ -24,46 +24,17 @@ def show(owner, repo):
 
 # Retorna as datas da issues com a quantidade daquele dia e tipo de issue (created, closed)
 @app.route('/info/issues-dates/<owner>/<repo>')
-def show_issues(owner, repo):
-    start = request.args.get('start')
-    end = request.args.get('end')
+def show_issues_dates(owner, repo):
+    result = issues_dates(owner, repo)
 
-    if(start == ''):
-        start = None
-    if(end == ''):
-        end = None
-
-    result = issues_dates(owner, repo, start, end)
     return result
 
 
 # Retorna a quantidade de issues criadas por cada participante do projeto
-@app.route('/info/issues-authors/<owner>/<repo>')
-def show_issues_authors(owner, repo):
-    start = request.args.get('start')
-    end = request.args.get('end')
+@app.route('/info/issues-authors-lifetime/<owner>/<repo>')
+def show_issues_authors_lifetime(owner, repo):
+    result = issues_authors_lifetime(owner, repo)
 
-    if(start == ''):
-        start = None
-    if(end == ''):
-        end = None
-
-    result = issues_authors(owner, repo, start, end)
-    return result
-
-
-# Retorna a quantidade de dias que as issues passaram desde abertas até fechadas
-@app.route('/info/issues-lifetime/<owner>/<repo>')
-def show_issues_lifetime(owner, repo):
-    start = request.args.get('start')
-    end = request.args.get('end')
-
-    if(start == ''):
-        start = None
-    if(end == ''):
-        end = None
-
-    result = issues_lifetime(owner, repo, start, end)
     return result
 
 
@@ -71,36 +42,7 @@ def show_issues_lifetime(owner, repo):
 @app.route('/info/commits/<owner>/<repo>')
 def show_total_commits(owner, repo):
     result = get_commits(owner, repo)
-    return result
 
-
-# Retorna a quantidade de commits realizados por cada participante do projeto
-@app.route('/info/commits-authors/<owner>/<repo>')
-def show_commits_by_date(owner, repo):
-    start = request.args.get('start')
-    end = request.args.get('end')
-
-    if(start == ''):
-        start = None
-    if(end == ''):
-        end = None
-
-    result = get_commits_by_date(owner, repo, start, end)
-    return result
-
-
-# Retorna todos os usuário que fizeram alterações durante determinado período de tempo
-@app.route('/info/files-changed/<owner>/<repo>')
-def show_total_files_changed(owner, repo):
-    start = request.args.get('start')
-    end = request.args.get('end')
-
-    if(start == ''):
-        start = None
-    if(end == ''):
-        end = None
-
-    result = get_total_changes_by_time(owner, repo, start, end)
     return result
 
 
