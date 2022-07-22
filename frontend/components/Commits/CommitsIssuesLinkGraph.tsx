@@ -100,6 +100,10 @@ const CommitsIssuesLinkGraph = (props: CommitsIssuesLinkProps) => {
     commitsByMessage(props.commits);
   }, []);
 
+  useEffect(() => {
+    commitsByMessage(props.commits, props.start, props.end);
+  }, [props.start, props.end]);
+
   return (
     <>
       <div className={styles.plot}>
