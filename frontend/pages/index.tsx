@@ -70,14 +70,25 @@ export default function Home() {
               setRepoUrl(ev.target.value);
             }}
           />
-          <button
-            className={styles.button}
-            onClick={() => {
-              if (repoUrl.length > 0) loadData();
-            }}
-          >
-            Exibir
-          </button>
+          <div className={styles.buttonContainer}>
+            <button
+              className={styles.button}
+              onClick={() => {
+                if (repoUrl.length > 0) loadData();
+              }}
+            >
+              Exibir
+            </button>
+            <button
+              className={styles.button}
+              onClick={() => {
+                setRepoUrl('ES2-UFPI/maltese');
+                if (repoUrl.length > 0) loadData();
+              }}
+            >
+              MalteseRepo
+            </button>
+          </div>
         </div>
         <span className={styles.description}>
           Aplicação para ver a evolução de projetos de ES2.

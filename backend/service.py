@@ -60,6 +60,7 @@ def get_commits(owner, repo):
     for commit in repo.fetch():
         date = formatCommitDate(commit['data']['CommitDate'])
         author = commit['data']['Author'].split(' <')[0]
+        message = commit['data']['message']
         added = 0
         removed = 0
 
@@ -73,8 +74,9 @@ def get_commits(owner, repo):
                     removed += int(total_removed)
 
         info = {
-            'author': author,
             'date': date,
+            'author': author,
+            'message': message,
             'files_changed': len(commit['data']['files']),
             'lines_added': added,
             'lines_removed': removed
@@ -100,15 +102,17 @@ def get_issues(owner, repo):
             labels = parse_arrays(item['data']['labels'], 'name')
             assignees = parse_arrays(item['data']['assignees'], 'login')
 
-            issues_list.append({'number': item['data']['number'],
-                                'creator': item['data']['user']['login'],
-                                'state': item['data']['state'],
-                                'labels': labels,
-                                'assignees': assignees,
-                                'comments': item['data']['comments'],
-                                'created_at': item['data']['created_at'],
-                                'closed_at': item['data']['closed_at']
-                                })
+            info = {'number': item['data']['number'],
+                    'creator': item['data']['user']['login'],
+                    'state': item['data']['state'],
+                    'labels': labels,
+                    'assignees': assignees,
+                    'comments': item['data']['comments'],
+                    'created_at': item['data']['created_at'],
+                    'closed_at': item['data']['closed_at']
+                    }
+
+            issues_list.append(info)
 
     result = {}
     result['issues'] = issues_list
@@ -146,28 +150,6 @@ def issues_dates(owner, repo):
     result['issues'] = sorted(
         creation_list + closing_list, key=lambda d: d['date'])
     return json.dumps(result)
-
-
-def issues_authors(owner, repo):
-    data = json.loads(get_issues(owner, repo))
-    creators = []
-    result = {}
-
-    for issue in data['issues']:
-        date = issue['created_at'].split('T')[
-            0].replace('-', '')
-
-        creators.append({"number": issue['number'],
-                        "author": issue['creator'], "created": date, })
-
-    # non_repeated_creators = remove_duplicates(creators)
-    # non_repeated_creators.sort()
-
-    # for i in non_repeated_creators:
-    #     count[str(i)] = creators.count(i)
-
-    result['issues'] = creators
-    return result
 
 
 def difference_between_dates(date1, date2):

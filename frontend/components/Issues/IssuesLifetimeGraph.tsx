@@ -19,7 +19,7 @@ const IssuesLifetimeGraph = (props: IssuesLifetimeProps) => {
   const issuesByLifetime = (response, start = undefined, end = undefined) => {
     if (start == '') start = undefined;
     if (end == '') end = undefined;
-    
+
     const lifetimeValues = [];
     response.data['issues'].forEach((elem) => {
       if (
@@ -73,6 +73,8 @@ const IssuesLifetimeGraph = (props: IssuesLifetimeProps) => {
               zeroline: false,
               title: 'Dias',
             },
+            plot_bgcolor: '#fafafa',
+            paper_bgcolor: '#fafafa',
           }}
         />
       </div>
