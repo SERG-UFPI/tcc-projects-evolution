@@ -1,6 +1,7 @@
 import dynamic from 'next/dynamic';
 import styles from '../../styles/Home.module.css';
 import CommitsAuthorsGraph from './CommitsAuthorsGraph';
+import CommitsAuthorsLinesGraph from './CommitsAuthorsLinesGraph';
 import CommitsIssuesLinkGraph from './CommitsIssuesLinkGraph';
 import CommitsLinesGraph from './CommitsLinesGraph';
 
@@ -31,6 +32,11 @@ const CommitsSection = (props: CommitsSectionProps) => {
           end={props.end}
         />
         <CommitsIssuesLinkGraph
+          commits={props.commits}
+          start={props.start}
+          end={props.end}
+        />
+        <CommitsAuthorsLinesGraph
           commits={props.commits}
           start={props.start}
           end={props.end}

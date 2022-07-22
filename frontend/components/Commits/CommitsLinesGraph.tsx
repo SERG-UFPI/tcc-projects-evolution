@@ -26,7 +26,6 @@ const CommitsLinesGraph = (props: CommitsLinesProps) => {
     const removedFiles = [];
     const dates = [];
 
-    console.log(`Start: ${start} || End: ${end}`);
     response.data['commits'].forEach((elem) => {
       if (
         (!start && !end) ||
@@ -57,7 +56,7 @@ const CommitsLinesGraph = (props: CommitsLinesProps) => {
 
   useEffect(() => {
     linesAddedRemoved(props.commits, props.start, props.end);
-  }, [props.start, props.end]);
+  }, [props.start, props.end, props.commits]);
 
   return (
     <>
