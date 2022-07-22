@@ -76,6 +76,18 @@
   width: 100%; 
 }
 
+.buttonContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.buttonContainer button {
+  margin-left: 10px;
+  margin-right: 15px;
+}
+
 .inputIssues {
   margin-top: 1px;
   margin-bottom: 10px;
@@ -119,4 +131,10 @@
 
 .pageComponents hr {
   width: 100%;
+}
+
+.plotCarousel {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }

@@ -77,6 +77,8 @@ const CommitsAuthorsGraph = (props: CommitsAuthorsProps) => {
             width: 400,
             margin: { t: 50, b: 50, l: 0, r: 0 },
             showlegend: false,
+            plot_bgcolor: '#fafafa',
+            paper_bgcolor: '#fafafa',
           }}
         />
       </div>

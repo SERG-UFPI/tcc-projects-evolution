@@ -62,7 +62,6 @@ const CommitsLinesGraph = (props: CommitsLinesProps) => {
   return (
     <>
       <div className={styles.plot}>
-        <p>Linhas Adicionadas e Removidas</p>
         <Plot
           data={[
             {
@@ -81,7 +80,9 @@ const CommitsLinesGraph = (props: CommitsLinesProps) => {
             },
           ]}
           layout={{
-            title: '',
+            title: 'Linhas Adicionadas e Removidas',
+            paper_bgcolor: '#fafafa',
+            plot_bgcolor: '#fafafa',
           }}
         />
       </div>
