@@ -47,4 +47,4 @@ def show_total_commits(owner, repo):
 
 
 if __name__ == "__main__":
-    serve(app, host='0.0.0.0', port=50)
+    serve(app, host='10.0.0.5', port=80)
