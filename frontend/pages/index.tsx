@@ -24,17 +24,17 @@ export default function Home() {
     try {
       const responses = await Promise.all([
         axios.get(
-          `https://18.210.151.218.nip.io/info/issues-dates/${
+          `https://20.163.20.169.nip.io/info/issues-dates/${
             urlParts[urlParts.length - 2]
           }/${urlParts[urlParts.length - 1]}`
         ),
         axios.get(
-          `https://18.210.151.218.nip.io/info/issues-authors-lifetime/${
+          `https://20.163.20.169.nip.io/info/issues-authors-lifetime/${
             urlParts[urlParts.length - 2]
           }/${urlParts[urlParts.length - 1]}`
         ),
         axios.get(
-          `https://18.210.151.218.nip.io/info/commits/${
+          `https://20.163.20.169.nip.io/info/commits/${
             urlParts[urlParts.length - 2]
           }/${urlParts[urlParts.length - 1]}`
         ),
