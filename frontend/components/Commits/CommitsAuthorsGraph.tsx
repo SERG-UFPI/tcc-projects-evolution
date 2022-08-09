@@ -21,8 +21,11 @@ const CommitsAuthorsGraph = (props: CommitsAuthorsProps) => {
     if (start == '') start = undefined;
     if (end == '') end = undefined;
 
-    const totalAuthors = [];
+    const totalIdentifier = [];
+    const info = [];
     const authorsTotalCommitsList = [];
+    let aux2 = [];
+    let authorDict = {};
 
     response.data['commits'].forEach((elem) => {
       if (
@@ -31,19 +34,36 @@ const CommitsAuthorsGraph = (props: CommitsAuthorsProps) => {
         (elem.date >= start && !end) ||
         (elem.date <= end && !start)
       ) {
-        totalAuthors.push(elem.author);
+        if (aux2.indexOf(elem.identifier) == -1) {
+          const key = elem.identifier;
+          const value = elem.author;
+          authorDict[`${key}`] = value;
+          aux2.push(elem.identifier);
+        }
+
+        info.push({ author: elem.author, identifier: elem.identifier });
+        totalIdentifier.push(elem.identifier);
       }
     });
 
-    const nonRepeatedAuthors = totalAuthors.filter(
-      (author, index) => totalAuthors.indexOf(author) === index
+    const nonRepeatedIdentifier = totalIdentifier.filter(
+      (identifier, index) => totalIdentifier.indexOf(identifier) === index
     );
 
-    nonRepeatedAuthors.forEach((author) =>
+    nonRepeatedIdentifier.forEach((identifier) =>
       authorsTotalCommitsList.push(
-        totalAuthors.filter((x) => x == author).length
+        totalIdentifier.filter((x) => x == identifier).length
       )
     );
+
+    let nonRepeatedAuthors = [];
+    let aux = [];
+    info.forEach((elem) => {
+      if (aux.indexOf(elem.identifier) == -1) {
+        nonRepeatedAuthors.push(elem.author);
+        aux.push(elem.identifier);
+      }
+    });
 
     setCommits([...nonRepeatedAuthors]);
     setAuthorsTotalCommits([...authorsTotalCommitsList]);
@@ -73,8 +93,7 @@ const CommitsAuthorsGraph = (props: CommitsAuthorsProps) => {
             },
           ]}
           layout={{
-            height: 400,
-            width: 400,
+            width: 655,
             margin: { t: 50, b: 50, l: 0, r: 0 },
             showlegend: false,
             plot_bgcolor: '#fafafa',

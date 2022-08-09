@@ -24,27 +24,6 @@ def remove_duplicates(arr):
     return result
 
 
-""" def parse_dates(count, dates, issue_type):
-    non_repeated_dates = remove_duplicates(dates)
-    non_repeated_dates.sort()
-
-    for i in non_repeated_dates:
-        count[str(i)] = {"total": dates.count(i), "type": issue_type} """
-
-
-# def parse_dates_same_day(count, dates, issue_type):
-#     non_repeated_dates = remove_duplicates(dates)
-#     non_repeated_dates.sort()
-
-#     for i in non_repeated_dates:
-#         if str(i) in count:
-#             previous_info = count[str(i)]
-#             count[str(i)] = [previous_info[0], {
-#                 "total": dates.count(i), "type": issue_type}]
-#         else:
-#             count[str(i)] = [{"total": dates.count(i), "type": issue_type}]
-
-
 def formatCommitDate(date):
     clear_date = datetime.strptime(date, '%c %z')
 
@@ -56,10 +35,13 @@ def get_commits(owner, repo):
     repo_dir = f'/tmp/{repo}.git'
     repo = Git(uri=repo_url, gitpath=repo_dir)
     commits_list = []
+    last_commit_hash = ''
 
     for commit in repo.fetch():
+        commit_hash = commit['data']['commit']
         date = formatCommitDate(commit['data']['CommitDate'])
         author = commit['data']['Author'].split(' <')[0]
+        identifier = commit['data']['Author'].split(' <')[1].split('.')[0]
         message = commit['data']['message']
         added = 0
         removed = 0
@@ -73,15 +55,23 @@ def get_commits(owner, repo):
                     added += int(total_added)
                     removed += int(total_removed)
 
-        info = {
-            'date': date,
-            'author': author,
-            'message': message,
-            'files_changed': len(commit['data']['files']),
-            'lines_added': added,
-            'lines_removed': removed
-        }
-        commits_list.append(info)
+        if('+' in identifier):
+            aux = identifier.split('+')[1].split('@')[0]
+            identifier = aux
+
+        if(not '[bot]' in author and last_commit_hash != commit_hash):
+            info = {
+                'date': date,
+                'author': author,
+                'identifier': identifier,
+                'message': message,
+                'files_changed': len(commit['data']['files']),
+                'lines_added': added,
+                'lines_removed': removed
+            }
+            last_commit_hash = commit_hash
+            commits_list.append(info)
+        # commits_list.append(commit['data'])
 
     result = {}
     result['commits'] = commits_list
@@ -111,8 +101,8 @@ def get_issues(owner, repo):
                     'created_at': item['data']['created_at'],
                     'closed_at': item['data']['closed_at']
                     }
-
             issues_list.append(info)
+            # issues_list.append(item['data'])
 
     result = {}
     result['issues'] = issues_list

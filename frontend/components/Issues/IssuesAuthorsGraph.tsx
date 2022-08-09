@@ -74,7 +74,7 @@ const IssuesAuthorsGraph = (props: IssuesAuthorsProps) => {
           ]}
           layout={{
             height: 400,
-            width: 400,
+            width: 655,
             margin: { t: 50, b: 50, l: 0, r: 0 },
             showlegend: false,
             plot_bgcolor: '#fafafa',

@@ -1,5 +1,3 @@
-import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
 import styles from '../../styles/Home.module.css';
@@ -20,17 +18,17 @@ const CommitsIssuesLinkGraph = (props: CommitsIssuesLinkProps) => {
   const [nonCommitLinkAuthors, setNonCommitLinkAuthors] = useState([]);
   const [commitsWithLink, setCommitsWithLink] = useState([]);
   const [commitsWithoutLink, setCommitsWithoutLink] = useState([]);
-  const [carouselIndex, setCarouselIndex] = useState(0);
 
   const commitsByMessage = (response, start = undefined, end = undefined) => {
     if (start == '') start = undefined;
     if (end == '') end = undefined;
 
-    let issueLinkAuthors = [];
-    let nonIssueLinkAuthors = [];
-    let issueLinkTotal = [];
-    let nonIssueLinkTotal = [];
-    const allAuthors = [];
+    const issueLinkAuthors = [];
+    const nonIssueLinkAuthors = [];
+    const issueLinkTotal = [];
+    const nonIssueLinkTotal = [];
+    const aux = [];
+    let authorsDict = {};
 
     response.data['commits'].forEach((elem) => {
       if (
@@ -39,26 +37,26 @@ const CommitsIssuesLinkGraph = (props: CommitsIssuesLinkProps) => {
         (elem.date >= start && !end) ||
         (elem.date <= end && !start)
       ) {
+        if (aux.indexOf(elem.identifier) == -1) {
+          authorsDict[`${elem.identifier}`] = elem.author;
+          aux.push(elem.identifier);
+        }
+
         if (!elem.message.includes('Merge')) {
           if (!elem.message.includes('bot')) {
             elem.message.includes('#')
-              ? issueLinkAuthors.push(elem.author)
-              : nonIssueLinkAuthors.push(elem.author);
-            allAuthors.push(elem.author);
+              ? issueLinkAuthors.push(elem.identifier)
+              : nonIssueLinkAuthors.push(elem.identifier);
           }
         }
       }
     });
 
-    let nonRepeatAllAuthors = allAuthors.filter(
-      (author, index) => allAuthors.indexOf(author) === index
-    );
-
-    let nonRepeatedIssueLinkAuthors = issueLinkAuthors.filter(
+    const nonRepeatedIssueLinkAuthors = issueLinkAuthors.filter(
       (author, index) => issueLinkAuthors.indexOf(author) === index
     );
 
-    let nonRepeatedNonIssueLinkAuthors = nonIssueLinkAuthors.filter(
+    const nonRepeatedNonIssueLinkAuthors = nonIssueLinkAuthors.filter(
       (author, index) => nonIssueLinkAuthors.indexOf(author) === index
     );
 
@@ -72,28 +70,21 @@ const CommitsIssuesLinkGraph = (props: CommitsIssuesLinkProps) => {
       )
     );
 
-    let newParseCommitLinks = Array(nonRepeatAllAuthors.length).fill(0);
-    let newParseNoCommitLinks = Array(nonRepeatAllAuthors.length).fill(0);
+    const linkAuthors = [];
+    const nonLinkAuthors = [];
 
-    nonRepeatAllAuthors.forEach((author) => {
-      let indexAllAuthor = nonRepeatAllAuthors.indexOf(author);
+    nonRepeatedIssueLinkAuthors.forEach((el) =>
+      linkAuthors.push(authorsDict[el])
+    );
 
-      let indexAuthor = nonRepeatedIssueLinkAuthors.indexOf(author);
-      if (indexAuthor != -1) {
-        let total = issueLinkTotal[indexAuthor];
-        newParseCommitLinks[indexAllAuthor] = total;
-      }
+    nonRepeatedNonIssueLinkAuthors.forEach((el) =>
+      nonLinkAuthors.push(authorsDict[el])
+    );
 
-      indexAuthor = nonRepeatedNonIssueLinkAuthors.indexOf(author);
-      if (indexAuthor != -1) {
-        let total = nonIssueLinkTotal[indexAuthor];
-        newParseNoCommitLinks[indexAllAuthor] = total;
-      }
-    });
-
-    setcommitLinkAuthors([...nonRepeatAllAuthors]);
-    setCommitsWithLink([...newParseCommitLinks]);
-    setCommitsWithoutLink([...newParseNoCommitLinks]);
+    setcommitLinkAuthors([...linkAuthors]);
+    setNonCommitLinkAuthors([...nonLinkAuthors]);
+    setCommitsWithLink([...issueLinkTotal]);
+    setCommitsWithoutLink([...nonIssueLinkTotal]);
   };
 
   useEffect(() => {
@@ -107,52 +98,36 @@ const CommitsIssuesLinkGraph = (props: CommitsIssuesLinkProps) => {
   return (
     <>
       <div className={styles.plot}>
-        <div className={styles.plotCarousel}>
-          <button
-            onClick={() => {
-              if (carouselIndex == 0) {
-                setCarouselIndex(commitLinkAuthors.length - 1);
-              } else {
-                setCarouselIndex(carouselIndex - 1);
-              }
-            }}
-          >
-            <FontAwesomeIcon icon={faArrowLeft} />
-          </button>
-          <Plot
-            data={[
-              {
-                x: [commitLinkAuthors[carouselIndex]],
-                y: [commitsWithLink[carouselIndex]],
-                name: 'Com Issue Link',
-                type: 'bar',
-              },
-              {
-                x: [commitLinkAuthors[carouselIndex]],
-                y: [commitsWithoutLink[carouselIndex]],
-                name: 'Sem Issue Link',
-                type: 'bar',
-              },
-            ]}
-            layout={{
-              title: 'Commits Issue Link',
-              barmode: 'group',
-              paper_bgcolor: '#fafafa',
-              plot_bgcolor: '#fafafa',
-            }}
-          />
-          <button
-            onClick={() => {
-              if (commitLinkAuthors.length - 1 == carouselIndex) {
-                setCarouselIndex(0);
-              } else {
-                setCarouselIndex(carouselIndex + 1);
-              }
-            }}
-          >
-            <FontAwesomeIcon icon={faArrowRight} />
-          </button>
-        </div>
+        <Plot
+          data={[
+            {
+              x: commitLinkAuthors,
+              y: commitsWithLink,
+              name: 'Com Link',
+              type: 'bar',
+            },
+            {
+              x: nonCommitLinkAuthors,
+              y: commitsWithoutLink,
+              name: 'Sem Link',
+              type: 'bar',
+            },
+          ]}
+          layout={{
+            barmode: 'stack',
+            title: 'Commits Issues Link',
+            font: {
+              family: 'Arial, sans-serif',
+              color: '#111111',
+            },
+            yaxis: {
+              title: 'Qtd. de Commits',
+            },
+            plot_bgcolor: '#fafafa',
+            paper_bgcolor: '#fafafa',
+            width: 655,
+          }}
+        />
       </div>
     </>
   );
