@@ -1,9 +1,10 @@
 from dotenv import load_dotenv
-from flask import Flask, request
+from flask import Flask
 from flask_cors import CORS
 from waitress import serve
-from service import (get_commits, get_issues,
-                     issues_authors_lifetime, issues_dates)
+
+from service import (get_commits, get_issues, issues_authors_lifetime,
+                     issues_dates)
 
 app = Flask(__name__)
 CORS(app)

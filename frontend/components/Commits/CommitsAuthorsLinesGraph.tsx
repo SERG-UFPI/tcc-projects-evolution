@@ -59,12 +59,19 @@ const CommitsAuthorsLinesGraph = (props: CommitsAuthorsLinesProps) => {
     let addedByAuthor = [];
     let removedByAuthor = [];
     let info = [];
+    
     nonRepeatAllAuthors.forEach((elem) => {
       for (var i = 0; i < allAuthors.length; i++) {
         if (allAuthors[i] == elem) {
-          dateByAuthor.push(dates[i]);
-          addedByAuthor.push(addedLines[i]);
-          removedByAuthor.push(-removedLines[i]);
+          let index = dateByAuthor.indexOf(dates[i])
+          if(index == -1) {
+            dateByAuthor.push(dates[i]);
+            addedByAuthor.push(addedLines[i]);
+            removedByAuthor.push(-removedLines[i]);
+          } else {
+            addedByAuthor[index] += addedLines[i];
+            removedByAuthor[index] -= removedLines[i];
+          }
         }
       }
       info.push([dateByAuthor, addedByAuthor, removedByAuthor]);
@@ -103,34 +110,40 @@ const CommitsAuthorsLinesGraph = (props: CommitsAuthorsLinesProps) => {
           <Plot
             data={[
               {
-                type: 'scatter',
                 x: info[carouselIndex] ? info[carouselIndex][0] : null,
                 y: info[carouselIndex] ? info[carouselIndex][1] : null,
-                mode: 'lines',
+                type: 'bar',
                 name: 'Adicionadas',
-                line: {
+                marker: {
                   color: 'rgb(58, 156, 31)',
-                  width: 2,
                 },
               },
               {
-                type: 'scatter',
                 x: info[carouselIndex] ? info[carouselIndex][0] : null,
                 y: info[carouselIndex] ? info[carouselIndex][2] : null,
-                mode: 'lines',
+                type: 'bar',
                 name: 'Removidas',
-                line: {
+                marker: {
                   color: 'rgb(242, 47, 36)',
-                  width: 2,
                 },
               },
             ]}
             layout={{
               title: `Linhas Adicionadas e Removidas por: ${authors[carouselIndex]}`,
-              width: 650,
-              height: 500,
+              width: 600,
               paper_bgcolor: '#fafafa',
               plot_bgcolor: '#fafafa',
+              font: {
+                family: 'Arial, sans-serif',
+                color: '#111111',
+              },
+              xaxis: {
+                type: 'date',
+                title: 'Datas',
+              },
+              yaxis: {
+                title: 'Linhas',
+              },
             }}
           />
           <button

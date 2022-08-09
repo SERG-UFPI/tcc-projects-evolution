@@ -75,6 +75,7 @@ const IssuesLifetimeGraph = (props: IssuesLifetimeProps) => {
             },
             plot_bgcolor: '#fafafa',
             paper_bgcolor: '#fafafa',
+            width: 655,
           }}
         />
       </div>

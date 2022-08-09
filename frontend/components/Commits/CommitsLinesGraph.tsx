@@ -64,24 +64,40 @@ const CommitsLinesGraph = (props: CommitsLinesProps) => {
         <Plot
           data={[
             {
+              type: 'scatter',
               y: addedFiles,
               x: dateCommits,
-              fill: 'tozeroy',
-              type: 'scatter',
-              mode: 'none',
+              mode: 'lines',
+              name: 'Adicionadas',
+              line: {
+                color: 'rgb(58, 156, 31)',
+                width: 2,
+              },
             },
             {
+              type: 'scatter',
               y: removedFiles,
               x: dateCommits,
-              fill: 'tozeroy',
-              type: 'scatter',
-              mode: 'none',
+              mode: 'lines',
+              name: 'Removidas',
+              line: {
+                color: 'rgb(242, 47, 36)',
+                width: 2,
+              },
             },
           ]}
           layout={{
             title: 'Linhas Adicionadas e Removidas',
             paper_bgcolor: '#fafafa',
             plot_bgcolor: '#fafafa',
+            width: 655,
+            xaxis: {
+              type: 'date',
+              title: 'Datas',
+            },
+            yaxis: {
+              title: 'Linhas',
+            },
           }}
         />
       </div>

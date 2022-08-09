@@ -18,7 +18,38 @@ const IssuesSection = (props: IssuesSectionProps) => {
   const [end, setEnd] = useState('');
   const [parsedEnd, setParsedEnd] = useState('');
 
-  // Para atualizar os gráficos quando as datas mudarem
+  const captureStartEndDate = (responseIssues, responseCommits) => {
+    const firstIssueDate = responseIssues.data['issues'][0].date;
+    const lastIssueDate =
+      responseIssues.data['issues'][responseIssues.data['issues'].length - 1]
+        .date;
+    const firsCommitDate = responseCommits.data['commits'][0].date;
+    const lastCommitDate =
+      responseCommits.data['commits'][
+        responseCommits.data['commits'].length - 1
+      ].date;
+    let begin = '';
+    let end = '';
+
+    if (firstIssueDate <= firsCommitDate) begin = firstIssueDate;
+    else begin = firsCommitDate;
+
+    if (lastIssueDate >= lastCommitDate) end = lastIssueDate;
+    else end = lastCommitDate;
+
+    const parsedBegin =
+      begin.slice(0, 4) + '-' + begin.slice(4, 6) + '-' + begin.slice(6, 8);
+    const parsedEnd =
+      end.slice(0, 4) + '-' + end.slice(4, 6) + '-' + end.slice(6, 8);
+
+    setStart(parsedBegin);
+    setEnd(parsedEnd);
+  };
+
+  useEffect(() => {
+    captureStartEndDate(props.issuesDates, props.commits);
+  }, []);
+
   useEffect(() => {
     setParsedStart(start.replace(/-/g, ''));
     setParsedEnd(end.replace(/-/g, ''));

@@ -105,7 +105,6 @@ const IssuesDatesGraph = (props: IssuesDatesProps) => {
             {
               x: closedAt,
               y: countClosedAt,
-
               type: 'bar',
               name: 'Fechadas',
               marker: {
@@ -129,7 +128,7 @@ const IssuesDatesGraph = (props: IssuesDatesProps) => {
             },
             plot_bgcolor: '#fafafa',
             paper_bgcolor: '#fafafa',
-            width: 550,
+            width: 655,
           }}
         />
       </div>
