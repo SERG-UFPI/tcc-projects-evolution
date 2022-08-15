@@ -3,8 +3,8 @@ from flask import Flask
 from flask_cors import CORS
 from waitress import serve
 
-from service import (get_commits, get_issues, issues_authors_lifetime,
-                     issues_dates)
+from service import (get_commits, get_issues, get_pull_requests,
+                     issues_authors_lifetime, issues_dates)
 
 app = Flask(__name__)
 CORS(app)
@@ -16,10 +16,16 @@ def home():
     return "<h1>Projeto TCC & Eng 2!!!</h1>"
 
 
-# Informações gerais sobre issues daquele repositório, a chave do objeto ainda não eh a DATA
+# Informações gerais sobre issues daquele repositório e informações sobre as pull requests
 @app.route('/info/<owner>/<repo>')
 def show(owner, repo):
     result = get_issues(owner, repo)
+    return result
+
+
+@app.route('/info/pr/<owner>/<repo>')
+def show_pr(owner, repo):
+    result = get_pull_requests(owner, repo)
     return result
 
 

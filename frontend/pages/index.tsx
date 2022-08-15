@@ -9,6 +9,7 @@ export default function Home() {
   const [issuesDates, setIssuesDates] = useState<any>([]);
   const [issuesLifetime, setIssuesLifetime] = useState<any>([]);
   const [issuesAuthors, setIssuesAuthors] = useState<any>([]);
+  const [pullRequests, setPullRequests] = useState<any>([]);
   const [commits, setCommits] = useState<any>([]);
   const [repoUrl, setRepoUrl] = useState('');
   const [isDataReady, setIsDataReady] = useState(false);
@@ -34,6 +35,11 @@ export default function Home() {
           }/${urlParts[urlParts.length - 1]}`
         ),
         axios.get(
+          `https://20.163.20.169.nip.io/info/pr/${
+            urlParts[urlParts.length - 2]
+          }/${urlParts[urlParts.length - 1]}`
+        ),
+        axios.get(
           `https://20.163.20.169.nip.io/info/commits/${
             urlParts[urlParts.length - 2]
           }/${urlParts[urlParts.length - 1]}`
@@ -43,7 +49,8 @@ export default function Home() {
       setIssuesDates(responses[0]);
       setIssuesLifetime(responses[1]);
       setIssuesAuthors(responses[1]);
-      setCommits(responses[2]);
+      setPullRequests(responses[2]);
+      setCommits(responses[3]);
 
       setIsDataReady(true);
       setIsLoading(false);
@@ -113,6 +120,7 @@ export default function Home() {
           issuesDates={issuesDates}
           issuesLifetime={issuesLifetime}
           issuesAuthors={issuesAuthors}
+          pullRequests={pullRequests}
           commits={commits}
         />
       )}

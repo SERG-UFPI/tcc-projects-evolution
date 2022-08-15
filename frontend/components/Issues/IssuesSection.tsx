@@ -4,7 +4,7 @@ import CommitsSection from '../Commits/CommitsSection';
 import IssuesAuthorsGraph from './IssuesAuthorsGraph';
 import IssuesDatesGraph from './IssuesDatesGraph';
 import IssuesLifetimeGraph from './IssuesLifetimeGraph';
-//import PullRequestsGraph from './PullRequestsGraph';
+import PullRequestsGraph from './PullRequestsGraph';
 
 interface IssuesSectionProps {
   issuesDates: any[];
@@ -112,11 +112,11 @@ const IssuesSection = (props: IssuesSectionProps) => {
           start={parsedStart}
           end={parsedEnd}
         />
-        {/* <PullRequestsGraph
+        <PullRequestsGraph
           pullRequests={props.pullRequests}
           start={parsedStart}
           end={parsedEnd}
-        /> */}
+        />
       </div>
       <hr />
       <CommitsSection
