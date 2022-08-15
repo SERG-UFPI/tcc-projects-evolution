@@ -64,25 +64,21 @@ const CommitsLinesGraph = (props: CommitsLinesProps) => {
         <Plot
           data={[
             {
-              type: 'scatter',
+              type: 'bar',
               y: addedFiles,
               x: dateCommits,
-              mode: 'lines',
               name: 'Adicionadas',
-              line: {
+              marker: {
                 color: 'rgb(58, 156, 31)',
-                width: 2,
               },
             },
             {
-              type: 'scatter',
+              type: 'bar',
               y: removedFiles,
               x: dateCommits,
-              mode: 'lines',
               name: 'Removidas',
-              line: {
+              marker: {
                 color: 'rgb(242, 47, 36)',
-                width: 2,
               },
             },
           ]}
