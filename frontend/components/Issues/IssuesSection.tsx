@@ -4,11 +4,13 @@ import CommitsSection from '../Commits/CommitsSection';
 import IssuesAuthorsGraph from './IssuesAuthorsGraph';
 import IssuesDatesGraph from './IssuesDatesGraph';
 import IssuesLifetimeGraph from './IssuesLifetimeGraph';
+//import PullRequestsGraph from './PullRequestsGraph';
 
 interface IssuesSectionProps {
   issuesDates: any[];
   issuesLifetime: any[];
   issuesAuthors: any[];
+  pullRequests: any[];
   commits: any[];
 }
 
@@ -57,7 +59,6 @@ const IssuesSection = (props: IssuesSectionProps) => {
 
   return (
     <div className={styles.pageComponents}>
-      <h2 style={{ textAlign: 'center' }}>Issues</h2>
       <div className={styles.inputIssues}>
         <div className={styles.labelInputIssues}>
           <label>Data Inicial</label>
@@ -93,6 +94,8 @@ const IssuesSection = (props: IssuesSectionProps) => {
           {'Limpar'}
         </button>
       </div>
+      <hr />
+      <h2 style={{ textAlign: 'center' }}>Issues</h2>
       <div className={styles.issuesContainer}>
         <IssuesDatesGraph
           issuesDates={props.issuesDates}
@@ -109,6 +112,11 @@ const IssuesSection = (props: IssuesSectionProps) => {
           start={parsedStart}
           end={parsedEnd}
         />
+        {/* <PullRequestsGraph
+          pullRequests={props.pullRequests}
+          start={parsedStart}
+          end={parsedEnd}
+        /> */}
       </div>
       <hr />
       <CommitsSection

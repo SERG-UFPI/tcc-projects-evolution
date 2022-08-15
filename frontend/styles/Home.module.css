@@ -89,8 +89,8 @@
 }
 
 .inputIssues {
-  margin-top: 1px;
-  margin-bottom: 10px;
+  margin-top: 40px;
+  margin-bottom: 15px;
   display: flex;
   flex-direction: row;
   align-items: center;
