@@ -1,6 +1,7 @@
 import json
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
+from grimoirelab_toolkit.datetime import datetime_to_utc
 from perceval_repo.perceval.backends.core.git import Git
 from perceval_repo.perceval.backends.core.github import GitHub
 
@@ -109,6 +110,80 @@ def get_issues(owner, repo):
     return json.dumps(result)
 
 
+def parse_first_last_date_issue(createds, closes):
+    createds.sort()
+    closes.sort()
+
+    first = createds[0].split('T')[0]
+    last = closes[-1].split('T')[0]
+
+    result = {'begin': first, 'end': last}
+    return result
+
+
+def get_pull_requests(owner, repo, begin=None, end=None):
+    parsed_token = os.environ['token']
+    token = [parsed_token]
+    repo = GitHub(owner=owner, repository=repo, api_token=token)
+
+    created_list = []
+    closed_list = []
+    for item in repo.fetch():
+        if not 'pull_request' in item['data']:
+            created_list.append(item['data']['created_at'])
+            if item['data']['closed_at']:
+                closed_list.append(item['data']['closed_at'])
+
+    date = parse_first_last_date_issue(created_list, closed_list)
+
+    begin = datetime_to_utc(datetime.strptime(date['begin'], '%Y-%m-%d'))
+    end = datetime_to_utc(datetime.strptime(
+        date['end'], '%Y-%m-%d') + timedelta(days=1))
+
+    pr_list = []
+    for item in repo.fetch_items(category='pull_request', from_date=begin, to_date=end):
+        created = item['created_at'].split('T')[0]
+        closed = item['closed_at'].split('T')[0]
+        if item['merged_at']:
+            merged = item['merged_at'].split('T')[0].replace('-', '')
+        else:
+            merged = None
+
+        difference = difference_between_dates(created, closed)
+        requested_reviewers = parse_arrays(
+            item['requested_reviewers'], 'login')
+        reviewers_obj = parse_arrays(item['reviews_data'], 'user')
+        reviewers_parsed = parse_arrays(reviewers_obj, 'login')
+
+        for elem in reviewers_parsed:
+            if elem not in requested_reviewers:
+                requested_reviewers.append(elem)
+
+        count_comments = 0
+        for reviews in item['reviews_data']:
+            if(reviews['state'] == 'COMMENTED'):
+                count_comments += 1
+
+        info = {
+            'number': item['number'],
+            'creator': item['user']['login'],
+            'reviewers': requested_reviewers,
+            'created': created.replace('-', ''),
+            'closed': closed.replace('-', ''),
+            'merged': merged,
+            "active_days": difference,
+            'was_merged': item['merged'],
+            'merged_by': item['merged_by']['login'] if item['merged_by'] else None,
+            'comments': item['comments'] + item['review_comments'] + count_comments
+        }
+
+        pr_list.append(info)
+
+    result = {}
+    result['pr'] = pr_list
+    return json.dumps(result)
+
+
 def issues_dates(owner, repo):
     data = json.loads(get_issues(owner, repo))
     creation_dates, closing_dates, creation_list, closing_list = (
@@ -165,9 +240,14 @@ def issues_authors_lifetime(owner, repo):
 
             total_issues += 1
             issues.append(
-                {"number": issue['number'], "author": issue['creator'],
-                 "created": created[0].replace('-', ''),
-                 "closed": date, "active_days": difference})
+                {
+                    "number": issue['number'],
+                    "author": issue['creator'],
+                    "created": created[0].replace('-', ''),
+                    "closed": date,
+                    "active_days": difference
+                }
+            )
 
     result = {}
     result['issues'] = issues
