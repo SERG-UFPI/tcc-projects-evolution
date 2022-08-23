@@ -118,10 +118,7 @@ def get_commits(owner, repo):
     return json.dumps(result)
 
 
-g = Github(login_or_token=os.environ['token'])
-
-
-def check_author_commit(commit, contributors, new_info):
+def check_author_commit(commit, contributors, new_info, g):
     check = []
     for el in g.search_users(commit['identifier'], order='asc'):
         check.append(el)
@@ -154,6 +151,8 @@ def check_author_commit(commit, contributors, new_info):
 
 
 def metrics(owner, repo):
+    parsed_token = os.environ['token']
+    g = Github(login_or_token=parsed_token)
     count_files = []
     authors_dict, result = ({} for i in range(2))
     repo_py = g.get_repo(f'{owner}/{repo}')
@@ -188,7 +187,7 @@ def metrics(owner, repo):
     } for elem in authors_dict if(not '[bot]' in elem and not 'gavelino' in elem)]
 
     for commit in result_list:
-        if(check_author_commit(commit, contributors, new_info)):
+        if(check_author_commit(commit, contributors, new_info, g)):
             print(
                 f"{commit['author']} ~ {commit['identifier']} faz parte do projeto")
             commit['check'] = True
