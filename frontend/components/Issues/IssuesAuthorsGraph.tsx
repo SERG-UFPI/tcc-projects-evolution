@@ -27,11 +27,11 @@ const IssuesAuthorsGraph = (props: IssuesAuthorsProps) => {
     response.data['issues'].forEach((elem) => {
       if (
         (!start && !end) ||
-        (elem.created >= start && elem.created <= end) ||
-        (elem.created >= start && !end) ||
-        (elem.created <= end && !start)
+        (elem.created_at >= start && elem.created_at <= end) ||
+        (elem.created_at >= start && !end) ||
+        (elem.created_at <= end && !start)
       ) {
-        totalAuthors.push(elem.author);
+        totalAuthors.push(elem.creator);
       }
     });
 

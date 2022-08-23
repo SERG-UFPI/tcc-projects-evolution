@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
 import styles from '../../styles/Home.module.css';
@@ -20,19 +21,19 @@ const IssuesLifetimeGraph = (props: IssuesLifetimeProps) => {
     if (start == '') start = undefined;
     if (end == '') end = undefined;
 
-    const lifetimeValues = [];
+    const lifetime = [];
     response.data['issues'].forEach((elem) => {
       if (
         (!start && !end) ||
-        (elem.closed >= start && elem.closed <= end) ||
-        (elem.closed >= start && !end) ||
-        (elem.closed <= end && !start)
+        (elem.closed_at >= start && elem.closed_at <= end) ||
+        (elem.closed_at >= start && !end) ||
+        (elem.closed_at <= end && !start)
       ) {
-        lifetimeValues.push(elem.active_days);
+        lifetime.push(elem.active_days);
       }
     });
 
-    setlifetimeValues([...lifetimeValues]);
+    setlifetimeValues(lifetime);
   };
 
   useEffect(() => {

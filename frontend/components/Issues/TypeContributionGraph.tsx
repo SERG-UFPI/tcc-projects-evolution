@@ -85,15 +85,16 @@ const TypeContributionGraph = (props: TypeContributionProps) => {
     res_issues.data['issues'].forEach((elem) => {
       if (
         (!start && !end) ||
-        (elem.date >= start && elem.date <= end) ||
-        (elem.date >= start && !end) ||
-        (elem.date <= end && !start)
+        (elem.created_at >= start && elem.created_at <= end) ||
+        (elem.created_at >= start && !end) ||
+        (elem.created_at <= end && !start)
       ) {
-        elem['author'] in issuesAuthors
-          ? issuesAuthors[elem.author]++
-          : (issuesAuthors[elem.author] = 1);
+        elem['creator'] in issuesAuthors
+          ? issuesAuthors[elem.creator]++
+          : (issuesAuthors[elem.creator] = 1);
       }
     });
+    console.log(issuesAuthors);
     resultIssues.push(issuesAuthors);
 
     const [countComments, countMerges] = [[], []];
@@ -101,9 +102,9 @@ const TypeContributionGraph = (props: TypeContributionProps) => {
     res_pr.data['pr'].forEach((elem) => {
       if (
         (!start && !end) ||
-        (elem.date >= start && elem.date <= end) ||
-        (elem.date >= start && !end) ||
-        (elem.date <= end && !start)
+        (elem.created >= start && elem.created <= end) ||
+        (elem.created >= start && !end) ||
+        (elem.created <= end && !start)
       ) {
         if (elem.comments_authors) {
           Object.keys(elem.comments_authors).forEach((author) => {
@@ -113,8 +114,10 @@ const TypeContributionGraph = (props: TypeContributionProps) => {
 
         if (elem.reviewers)
           elem.reviewers.forEach((reviewer) => {
-            if (!(reviewer in prCommentsAuthors))
+            if (!(reviewer in prCommentsAuthors)) {
               prCommentsAuthors[reviewer] = 0;
+              integrationAuthors[reviewer] = 0;
+            }
           });
         else if (!(elem.creator in prCommentsAuthors))
           prCommentsAuthors[elem.creator] = 0;
@@ -158,8 +161,8 @@ const TypeContributionGraph = (props: TypeContributionProps) => {
       props.issuesAuthors,
       props.pullRequests,
       props.metrics,
-      '', // props.start
-      '' // props.end
+      props.start,
+      props.end
     );
   }, [props.start, props.end]);
 
@@ -181,8 +184,8 @@ const TypeContributionGraph = (props: TypeContributionProps) => {
               type: 'bar',
             },
             {
-              x: comments[0],
-              y: comments[1],
+              x: integration[0],
+              y: integration[1],
               name: 'Integração',
               type: 'bar',
             },

@@ -3,9 +3,8 @@ from flask import Flask
 from flask_cors import CORS
 from waitress import serve
 
-from service import (get_commits, get_issues, get_pull_requests,
-                     metrics, issues_authors_lifetime,
-                     issues_dates)
+from service import (get_commits, get_issues, get_pull_requests, issues_dates,
+                     metrics)
 
 app = Flask(__name__)
 CORS(app)
@@ -34,14 +33,6 @@ def show_pr(owner, repo):
 @app.route('/info/issues-dates/<owner>/<repo>')
 def show_issues_dates(owner, repo):
     result = issues_dates(owner, repo)
-
-    return result
-
-
-# Retorna a quantidade de issues criadas por cada participante do projeto
-@app.route('/info/issues-authors-lifetime/<owner>/<repo>')
-def show_issues_authors_lifetime(owner, repo):
-    result = issues_authors_lifetime(owner, repo)
 
     return result
 

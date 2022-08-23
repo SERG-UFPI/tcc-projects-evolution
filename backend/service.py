@@ -1,8 +1,6 @@
 import json
 import os
-import time
 from datetime import datetime, timedelta
-from github import Github
 
 from grimoirelab_toolkit.datetime import datetime_to_utc
 
@@ -79,6 +77,61 @@ def str_to_json(str_data, ctx):
     return data
 
 
+def parse_first_last_date_issue(createds, closes):
+    createds.sort()
+    closes.sort()
+
+    first = createds[0].split('T')[0]
+    last = closes[-1].split('T')[0]
+
+    result = {'begin': first, 'end': last}
+    return result
+
+
+def parse_date(date):
+    return date.split('T')[0].replace('-', '')
+
+
+def difference_between_dates(date1, date2):
+    if len(date1) == 8 and len(date2) == 8:
+        date1 = date1[0:4] + '-' + date1[4:6] + '-' + date1[6:8]
+        date2 = date2[0:4] + '-' + date2[4:6] + '-' + date2[6:8]
+
+    d1 = datetime.strptime(date1, "%Y-%m-%d")
+    d2 = datetime.strptime(date2, "%Y-%m-%d")
+
+    delta = d2 - d1
+    return delta.days
+
+
+def metrics(owner, repo):
+
+    github_dict = []
+    for commit in commit_repo(owner, repo):
+        date = format_commit_date(commit['data']['CommitDate'])
+
+        if "Merge pull request" not in commit['data']['message']:
+            author = commit['data']['Author'].split(' <')[0]
+            identifier = parse_commit_identifier(commit['data']['Author'])
+            
+            if not '[bot]' in author and not 'gavelino' in identifier:
+                count_files = []
+
+                for files in commit['data']['files']:
+                    if('.md' in files['file']):
+                        count_files.append(identifier)
+
+                github_dict.append({
+                    'date': date,
+                    'identifier': identifier,
+                    'author': commit['data']['Author'].split(' <')[0],
+                    'docs': True if len(count_files) > 0 else False
+                })
+
+    result = {'metrics': github_dict}
+    return json.dumps(result)
+
+
 def get_commits(owner, repo):
     commits_list = []
     last_commit_hash = ''
@@ -112,111 +165,14 @@ def get_commits(owner, repo):
             last_commit_hash = commit_hash
             commits_list.append(info)
 
-    result = {}
-    result['commits'] = commits_list
-
-    return json.dumps(result)
-
-
-def check_author_commit(commit, contributors, new_info, g):
-    check = []
-    for el in g.search_users(commit['identifier'], order='asc', location="Brazil"):
-        check.append(el)
-
-    if len(check) == 0:
-        try:
-            for el in g.search_users(commit['author'], order='desc', location="Brazil"):
-                parsed_name = str(el)[17:-2]
-                if parsed_name in contributors:
-                    if parsed_name not in new_info:
-                        new_info[parsed_name] = {
-                            'total': commit['total'], 'total_docs': commit['total_docs']}
-                    else:
-                        new_info[parsed_name]['total'] += commit['total']
-                        new_info[parsed_name]['total_docs'] += commit['total_docs']
-                    return True
-        except:
-            return False
-    else:
-        for el in g.search_users(commit['identifier'], order='asc', location="Brazil"):
-            parsed_name = str(el)[17:-2]
-            if parsed_name in contributors:
-                if parsed_name not in new_info:
-                    new_info[parsed_name] = {
-                        'total': commit['total'], 'total_docs': commit['total_docs']}
-                else:
-                    new_info[parsed_name]['total'] += commit['total']
-                    new_info[parsed_name]['total_docs'] += commit['total_docs']
-                return True
-
-
-def metrics(owner, repo):
-    parsed_token = os.environ['token']
-    g = Github(login_or_token=parsed_token)
-    count_files = []
-    authors_dict, result = ({} for i in range(2))
-    repo_py = g.get_repo(f'{owner}/{repo}')
-    contributors = []
-    new_info = {}
-
-    for el in repo_py.get_contributors():
-        contributors.append(str(el)[17:-2])
-
-    for commit in commit_repo(owner, repo):
-        identifier = parse_commit_identifier(commit['data']['Author'])
-
-        if identifier not in authors_dict.keys():
-            authors_dict[identifier] = {'author': commit['data']['Author'].split(' <')[
-                0], 'total': 1, 'total_docs': 0}
-        else:
-            authors_dict[identifier]['total'] += 1
-
-        for files in commit['data']['files']:
-            if('.md' in files['file']):
-                count_files.append(identifier)
-
-    non_repeat_identifier = remove_duplicates(count_files)
-    for elem in non_repeat_identifier:
-        authors_dict[elem]['total_docs'] = count_files.count(elem)
-
-    result_list = [{
-        'identifier': elem,
-        'author': authors_dict[elem]['author'],
-        'total': authors_dict[elem]['total'],
-        'total_docs': authors_dict[elem]['total_docs']
-    } for elem in authors_dict if(not '[bot]' in elem and not 'gavelino' in elem)]
-
-    for commit in result_list:
-        if(check_author_commit(commit, contributors, new_info, g)):
-            print(
-                f"{commit['author']} ~ {commit['identifier']} faz parte do projeto")
-            commit['check'] = True
-        else:
-            commit['check'] = False
-
-    result = {}
-    final1 = []
-    final2 = []
-    for commit in result_list:
-        if not commit['check']:
-            new_info[commit['identifier']] = {
-                'total': commit['total'], 'total_docs': commit['total_docs']}
-
-    for i in new_info:
-        final1.append(i)
-        final2.append(new_info[i])
-
-    final3 = [final1, final2]
-    result['metrics'] = final3
-
+    result = {'commits': commits_list}
     return json.dumps(result)
 
 
 def get_issues(owner, repo):
-    parsed_token = os.environ['token']
-    token = [parsed_token]
-    repo = GitHubClient(owner=owner, repository=repo, tokens=token)
-    issues_response, issues_list, pr_list = ([] for i in range(3))
+    repo = GitHubClient(owner=owner, repository=repo,
+                        tokens=[os.environ['token']])
+    issues_response, issues_list = ([] for i in range(2))
 
     for item in repo.issues():
         issues_response.append(item)
@@ -224,51 +180,44 @@ def get_issues(owner, repo):
     data = str_to_json(issues_response, 'issues')
 
     for elem in data:
-        if 'pull_request' in elem:
-            pr_list.append(elem)
-        else:
+        if not 'pull_request' in elem:
+            created = parse_date(elem['created_at'])
+            if elem['closed_at']:
+                closed = parse_date(elem['closed_at'])
+                difference = difference_between_dates(created, closed)
+            else:
+                closed, difference = (None for i in range(2))
             labels = parse_arrays(elem['labels'], 'name')
             assignees = parse_arrays(elem['assignees'], 'login')
 
-            info = {'number': elem['number'],
-                    'title': elem['title'],
-                    'creator': elem['user']['login'],
-                    'state': elem['state'],
-                    'labels': labels,
-                    'assignees': assignees,
-                    'comments': elem['comments'],
-                    'created_at': elem['created_at'],
-                    'closed_at': elem['closed_at'],
-                    'url': elem['html_url'],
-                    }
+            info = {
+                'id': elem['number'],
+                "number": f"#{elem['number']}",
+                'title': elem['title'],
+                'creator': elem['user']['login'],
+                'state': elem['state'],
+                'labels': labels,
+                'assignees': assignees,
+                'comments': elem['comments'],
+                'created_at': created,
+                'closed_at': closed,
+                "active_days": difference,
+                'url': elem['html_url'],
+            }
 
             issues_list.append(info)
 
-    result = {
-        'issues': sorted(issues_list, key=lambda d: d['number']),
-        'pr': sorted(pr_list, key=lambda d: d['number'])
-    }
+    result = {'issues': sorted(issues_list, key=lambda d: d['id'])}
     return json.dumps(result)
 
 
-def parse_first_last_date_issue(createds, closes):
-    createds.sort()
-    closes.sort()
-
-    first = createds[0].split('T')[0]
-    last = closes[-1].split('T')[0]
-
-    result = {'begin': first, 'end': last}
-    return result
-
-
 def get_pull_requests(owner, repo):
-    parsed_token = os.environ['token']
-    token = [parsed_token]
-    repo = GitHub(owner=owner, repository=repo, api_token=token)
+    repo = GitHub(owner=owner, repository=repo,
+                  api_token=[os.environ['token']])
 
     pr_list, created_list, closed_list = ([] for i in range(3))
     authors_dict, result = ({} for i in range(2))
+
     for item in repo.fetch():
         if not 'pull_request' in item['data']:
             created_list.append(item['data']['created_at'])
@@ -288,20 +237,18 @@ def get_pull_requests(owner, repo):
 
     date = parse_first_last_date_issue(created_list, closed_list)
 
-    begin = datetime_to_utc(datetime.strptime(date['begin'], '%Y-%m-%d'))
+    # begin = datetime_to_utc(datetime.strptime(date['begin'], '%Y-%m-%d'))
+    # end = datetime_to_utc(datetime.strptime(
+    #     date['end'], '%Y-%m-%d') + timedelta(days=1))
+    begin = datetime_to_utc(datetime.strptime('2021-06-21', '%Y-%m-%d'))
     end = datetime_to_utc(datetime.strptime(
-        date['end'], '%Y-%m-%d') + timedelta(days=1))
-    """ begin = datetime_to_utc(datetime.strptime('2021-06-21', '%Y-%m-%d'))
-    end = datetime_to_utc(datetime.strptime(
-        '2021-06-25', '%Y-%m-%d') + timedelta(days=1)) """
+        '2021-06-25', '%Y-%m-%d') + timedelta(days=1))
 
     for item in repo.fetch_items(category='pull_request', from_date=begin, to_date=end):
-        created = item['created_at'].split('T')[0]
-        closed = item['closed_at'].split('T')[0]
-        if item['merged_at']:
-            merged = item['merged_at'].split('T')[0].replace('-', '')
-        else:
-            merged = None
+        created = parse_date(item['created_at'])
+        closed = parse_date(item['closed_at'])
+        merged = parse_date(
+            item['merged_at']) if item['merged_at'] == True else None
 
         difference = difference_between_dates(created, closed)
         requested_reviewers = parse_arrays(
@@ -328,8 +275,8 @@ def get_pull_requests(owner, repo):
             'number': item['number'],
             'creator': item['user']['login'],
             'reviewers': requested_reviewers,
-            'created': created.replace('-', ''),
-            'closed': closed.replace('-', ''),
+            'created': created,
+            'closed': closed,
             'merged': merged,
             "active_days": difference,
             'was_merged': item['merged'],
@@ -340,12 +287,8 @@ def get_pull_requests(owner, repo):
 
         pr_list.append(info)
 
-    result['pr'] = pr_list
+    result['pr'] = sorted(pr_list, key=lambda d: d['number'])
     return json.dumps(result)
-
-
-def parse_date(date):
-    return date.split('T')[0].replace('-', '')
 
 
 def issues_dates(owner, repo):
@@ -354,15 +297,17 @@ def issues_dates(owner, repo):
         [] for i in range(4))
 
     for issue in data['issues']:
-        creation_dates.append(parse_date(issue['created_at']))
+        creation_dates.append(issue['created_at'])
         if issue['closed_at'] is not None:
-            closing_dates.append(parse_date(issue['closed_at']))
+            closing_dates.append(issue['closed_at'])
 
     creation_clear = remove_duplicates(creation_dates)
     closing_clear = remove_duplicates(closing_dates)
 
-    creation_list = [{"date": date, "total_created": creation_dates.count(
-        date), "total_closed": 0} for date in creation_clear]
+    creation_list = [{
+        "date": date, "total_created": creation_dates.count(date),
+        "total_closed": 0
+    } for date in creation_clear]
 
     for closed in closing_clear:
         for elem in creation_list:
@@ -370,58 +315,12 @@ def issues_dates(owner, repo):
                 elem['total_closed'] = closing_dates.count(closed)
                 closing_clear.pop(closing_clear.index(closed))
 
-    closing_list = [{"date": date, "total_created": 0,
-                     "total_closed": closing_dates.count(date)} for date in closing_clear]
+    closing_list = [{
+        "date": date,
+        "total_created": 0,
+        "total_closed": closing_dates.count(date)
+    } for date in closing_clear]
 
-    result = {}
-    result['issues'] = sorted(
-        creation_list + closing_list, key=lambda d: d['date'])
-    return json.dumps(result)
-
-
-def difference_between_dates(date1, date2):
-    if len(date1) == 8 and len(date2) == 8:
-        date1 = date1[0:4] + '-' + date1[4:6] + '-' + date1[6:8]
-        date2 = date2[0:4] + '-' + date2[4:6] + '-' + date2[6:8]
-
-    d1 = datetime.strptime(date1, "%Y-%m-%d")
-    d2 = datetime.strptime(date2, "%Y-%m-%d")
-
-    delta = d2 - d1
-    return delta.days
-
-
-def issues_authors_lifetime(owner, repo):
-    data = json.loads(get_issues(owner, repo))
-    issues = []
-    total_issues = 0
-
-    for issue in data['issues']:
-        if(issue['state'] == 'closed'):
-            created = parse_date(issue['created_at'])
-            closed = parse_date(issue['closed_at'])
-
-            difference = difference_between_dates(created, closed)
-
-            total_issues += 1
-            issues.append(
-                {
-                    "id": issue['number'],
-                    "number": f"#{issue['number']}",
-                    "title": issue['title'],
-                    "issue_url": issue['url'],
-                    "author": issue['creator'],
-                    # "name": issue['name'],
-                    "assignees": issue['assignees'],
-                    "comments": issue['comments'],
-                    "state": issue['state'],
-                    "created": created,
-                    "closed": closed,
-                    "active_days": difference
-                }
-            )
-
-    result = {}
-    result['issues'] = issues
-
+    result = {'issues': sorted(
+        creation_list + closing_list, key=lambda d: d['date'])}
     return json.dumps(result)
