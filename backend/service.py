@@ -120,12 +120,12 @@ def get_commits(owner, repo):
 
 def check_author_commit(commit, contributors, new_info, g):
     check = []
-    for el in g.search_users(commit['identifier'], order='asc'):
+    for el in g.search_users(commit['identifier'], order='asc', location="Brazil"):
         check.append(el)
 
     if len(check) == 0:
         try:
-            for el in g.search_users(commit['author'], order='desc'):
+            for el in g.search_users(commit['author'], order='desc', location="Brazil"):
                 parsed_name = str(el)[17:-2]
                 if parsed_name in contributors:
                     if parsed_name not in new_info:
@@ -138,7 +138,7 @@ def check_author_commit(commit, contributors, new_info, g):
         except:
             return False
     else:
-        for el in g.search_users(commit['identifier'], order='asc'):
+        for el in g.search_users(commit['identifier'], order='asc', location="Brazil"):
             parsed_name = str(el)[17:-2]
             if parsed_name in contributors:
                 if parsed_name not in new_info:
