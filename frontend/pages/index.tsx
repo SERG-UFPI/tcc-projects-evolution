@@ -45,11 +45,6 @@ export default function Home() {
             urlParts[urlParts.length - 2]
           }/${urlParts[urlParts.length - 1]}`
         ),
-        axios.get(
-          `https://20.163.20.169.nip.io/info/metrics/${
-            urlParts[urlParts.length - 2]
-          }/${urlParts[urlParts.length - 1]}`
-        ),
       ]);
 
       setIssuesDates(responses[0]);
@@ -57,7 +52,8 @@ export default function Home() {
       setIssuesAuthors(responses[1]);
       setPullRequests(responses[2]);
       setCommits(responses[3]);
-      setMetrics(responses[4]);
+      //setMetrics(responses[4]);
+      setMetrics({});
 
       setIsDataReady(true);
       setIsLoading(false);

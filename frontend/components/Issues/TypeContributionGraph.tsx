@@ -138,7 +138,7 @@ const TypeContributionGraph = (props: TypeContributionProps) => {
     // ##########################################
     // vvv Relacionado ao Git (Commits || Documentação)
 
-    const totalCommits = [];
+    /* const totalCommits = [];
     const totalDocs = [];
     res_commit.data['metrics'][1].forEach((elem) => {
       totalCommits.push(elem.total);
@@ -146,7 +146,7 @@ const TypeContributionGraph = (props: TypeContributionProps) => {
     });
 
     setCommits([res_commit.data['metrics'][0], totalCommits]);
-    setDocs([res_commit.data['metrics'][0], totalDocs]);
+    setDocs([res_commit.data['metrics'][0], totalDocs]); */
   };
 
   useEffect(() => {
@@ -186,7 +186,7 @@ const TypeContributionGraph = (props: TypeContributionProps) => {
               name: 'Integração',
               type: 'bar',
             },
-            {
+            /* {
               x: commits[0],
               y: commits[1],
               name: 'Commits',
@@ -197,7 +197,7 @@ const TypeContributionGraph = (props: TypeContributionProps) => {
               y: docs[1],
               name: 'Documentação',
               type: 'bar',
-            },
+            }, */
           ]}
           layout={{
             barmode: 'stack',
