@@ -46,7 +46,7 @@ export default function Home() {
           }/${urlParts[urlParts.length - 1]}`
         ),
         axios.get(
-          `http://localhost:5000/info/metrics/${
+          `https://20.163.20.169.nip.io/info/metrics/${
             urlParts[urlParts.length - 2]
           }/${urlParts[urlParts.length - 1]}`
         ),
