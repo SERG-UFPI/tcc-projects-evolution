@@ -11,6 +11,7 @@ export default function Home() {
   const [issuesAuthors, setIssuesAuthors] = useState<any>([]);
   const [pullRequests, setPullRequests] = useState<any>([]);
   const [commits, setCommits] = useState<any>([]);
+  const [metrics, setMetrics] = useState<any>([]);
   const [repoUrl, setRepoUrl] = useState('');
   const [isDataReady, setIsDataReady] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -44,6 +45,11 @@ export default function Home() {
             urlParts[urlParts.length - 2]
           }/${urlParts[urlParts.length - 1]}`
         ),
+        axios.get(
+          `http://localhost:5000/info/metrics/${
+            urlParts[urlParts.length - 2]
+          }/${urlParts[urlParts.length - 1]}`
+        ),
       ]);
 
       setIssuesDates(responses[0]);
@@ -51,6 +57,7 @@ export default function Home() {
       setIssuesAuthors(responses[1]);
       setPullRequests(responses[2]);
       setCommits(responses[3]);
+      setMetrics(responses[4]);
 
       setIsDataReady(true);
       setIsLoading(false);
@@ -122,6 +129,7 @@ export default function Home() {
           issuesAuthors={issuesAuthors}
           pullRequests={pullRequests}
           commits={commits}
+          metrics={metrics}
         />
       )}
     </div>

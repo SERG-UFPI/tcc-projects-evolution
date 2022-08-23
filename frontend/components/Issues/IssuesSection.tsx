@@ -5,6 +5,7 @@ import IssuesAuthorsGraph from './IssuesAuthorsGraph';
 import IssuesDatesGraph from './IssuesDatesGraph';
 import IssuesLifetimeGraph from './IssuesLifetimeGraph';
 import PullRequestsGraph from './PullRequestsGraph';
+import TypeContributionGraph from './TypeContributionGraph';
 
 interface IssuesSectionProps {
   issuesDates: any[];
@@ -12,6 +13,7 @@ interface IssuesSectionProps {
   issuesAuthors: any[];
   pullRequests: any[];
   commits: any[];
+  metrics: any[];
 }
 
 const IssuesSection = (props: IssuesSectionProps) => {
@@ -94,7 +96,7 @@ const IssuesSection = (props: IssuesSectionProps) => {
           {'Limpar'}
         </button>
       </div>
-      <hr />
+
       <h2 style={{ textAlign: 'center' }}>Issues</h2>
       <div className={styles.issuesContainer}>
         <IssuesDatesGraph
@@ -114,6 +116,13 @@ const IssuesSection = (props: IssuesSectionProps) => {
         />
         <PullRequestsGraph
           pullRequests={props.pullRequests}
+          start={parsedStart}
+          end={parsedEnd}
+        />
+        <TypeContributionGraph
+          issuesAuthors={props.issuesAuthors}
+          pullRequests={props.pullRequests}
+          metrics={props.metrics}
           start={parsedStart}
           end={parsedEnd}
         />
