@@ -15,58 +15,53 @@ interface CommitsAuthorsProps {
 
 const CommitsAuthorsGraph = (props: CommitsAuthorsProps) => {
   const [commits, setCommits] = useState([]);
-  const [authorsTotalCommits, setAuthorsTotalCommits] = useState([]);
 
   const commitsByAuthors = (response, start = undefined, end = undefined) => {
     if (start == '') start = undefined;
     if (end == '') end = undefined;
 
-    const totalIdentifier = [];
-    const info = [];
-    const authorsTotalCommitsList = [];
-    let aux2 = [];
-    let authorDict = {};
-
-    response.data['commits'].forEach((elem) => {
+    const totalCommits = [];
+    let [commitsIdentifier, authorsDict] = [{}, {}];
+    response.data['metrics'].forEach((elem) => {
       if (
         (!start && !end) ||
         (elem.date >= start && elem.date <= end) ||
         (elem.date >= start && !end) ||
         (elem.date <= end && !start)
       ) {
-        if (aux2.indexOf(elem.identifier) == -1) {
-          const key = elem.identifier;
-          const value = elem.author;
-          authorDict[`${key}`] = value;
-          aux2.push(elem.identifier);
-        }
-
-        info.push({ author: elem.author, identifier: elem.identifier });
-        totalIdentifier.push(elem.identifier);
+        if (!(elem.identifier in commitsIdentifier)) {
+          authorsDict[elem.identifier] = elem.author;
+          commitsIdentifier[elem.identifier] = { total: 1 };
+        } else commitsIdentifier[elem.identifier]['total'] += 1;
       }
     });
 
-    const nonRepeatedIdentifier = totalIdentifier.filter(
-      (identifier, index) => totalIdentifier.indexOf(identifier) === index
-    );
+    const aux = Object.keys(commitsIdentifier);
+    const values = Object.values(commitsIdentifier);
 
-    nonRepeatedIdentifier.forEach((identifier) =>
-      authorsTotalCommitsList.push(
-        totalIdentifier.filter((x) => x == identifier).length
-      )
-    );
-
-    let nonRepeatedAuthors = [];
-    let aux = [];
-    info.forEach((elem) => {
-      if (aux.indexOf(elem.identifier) == -1) {
-        nonRepeatedAuthors.push(elem.author);
-        aux.push(elem.identifier);
-      }
+    values.forEach((value) => {
+      totalCommits.push(value['total']);
     });
 
-    setCommits([...nonRepeatedAuthors]);
-    setAuthorsTotalCommits([...authorsTotalCommitsList]);
+    const [labels, newResultCommits] = [[], []];
+    aux.forEach((identifier) => {
+      labels.push(authorsDict[identifier]);
+    });
+
+    let count = 0;
+    aux.forEach((identifier) => {
+      if (labels.indexOf(authorsDict[identifier]) != -1) {
+        let index = labels.indexOf(authorsDict[identifier]);
+        let identifierIndex = aux.indexOf(identifier);
+        newResultCommits[index] =
+          totalCommits[index] + totalCommits[identifierIndex];
+      } else newResultCommits.push(totalCommits[count]);
+
+      labels.push(authorsDict[identifier]);
+      count++;
+    });
+
+    setCommits([labels, newResultCommits]);
   };
 
   useEffect(() => {
@@ -85,8 +80,8 @@ const CommitsAuthorsGraph = (props: CommitsAuthorsProps) => {
           data={[
             {
               type: 'pie',
-              values: authorsTotalCommits,
-              labels: commits,
+              labels: commits[0],
+              values: commits[1],
               textinfo: 'label+percent',
               textposition: 'inside',
               automargin: true,

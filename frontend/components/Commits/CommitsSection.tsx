@@ -12,6 +12,7 @@ const Plot = dynamic(() => import('react-plotly.js'), {
 
 interface CommitsSectionProps {
   commits: any[];
+  metrics: any[];
   start: string | undefined;
   end: string | undefined;
 }
@@ -22,7 +23,7 @@ const CommitsSection = (props: CommitsSectionProps) => {
       <h2 style={{ textAlign: 'center' }}>Commits</h2>
       <div className={styles.commitsContainer}>
         <CommitsAuthorsGraph
-          commits={props.commits}
+          commits={props.metrics}
           start={props.start}
           end={props.end}
         />

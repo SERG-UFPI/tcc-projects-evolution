@@ -130,6 +130,7 @@ const IssuesSection = (props: IssuesSectionProps) => {
       <hr />
       <CommitsSection
         commits={props.commits}
+        metrics={props.metrics}
         start={parsedStart}
         end={parsedEnd}
       />

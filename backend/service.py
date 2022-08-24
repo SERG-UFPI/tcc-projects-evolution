@@ -137,33 +137,36 @@ def get_commits(owner, repo):
     last_commit_hash = ''
 
     for commit in commit_repo(owner, repo):
-        added = 0
-        removed = 0
+        message = commit['data']['message']
+        identifier = parse_commit_identifier(commit['data']['Author'])
+        if "Merge pull request" not in message and "gavelino" not in identifier:
+            added = 0
+            removed = 0
 
-        for files in commit['data']['files']:
-            total_added = files.get('added')
-            total_removed = files.get('removed')
+            for files in commit['data']['files']:
+                total_added = files.get('added')
+                total_removed = files.get('removed')
 
-            if(total_added and total_removed):
-                if(not total_added == '-' and not total_removed == '-'):
-                    added += int(total_added)
-                    removed += int(total_removed)
+                if(total_added and total_removed):
+                    if(not total_added == '-' and not total_removed == '-'):
+                        added += int(total_added)
+                        removed += int(total_removed)
 
-        author = commit['data']['Author'].split(' <')[0]
-        commit_hash = commit['data']['commit']
-        if(not '[bot]' in author and last_commit_hash != commit_hash):
-            info = {
-                'date': format_commit_date(commit['data']['CommitDate']),
-                'author': author,
-                'identifier': parse_commit_identifier(commit['data']['Author']),
-                'message': commit['data']['message'],
-                'lines_added': added,
-                'lines_removed': removed,
-                'files_changed': commit['data']['files']
-            }
+            author = commit['data']['Author'].split(' <')[0]
+            commit_hash = commit['data']['commit']
+            if(not '[bot]' in author and last_commit_hash != commit_hash):
+                info = {
+                    'date': format_commit_date(commit['data']['CommitDate']),
+                    'author': author,
+                    'identifier': identifier,
+                    'message': message,
+                    'lines_added': added,
+                    'lines_removed': removed,
+                    'files_changed': commit['data']['files']
+                }
 
-            last_commit_hash = commit_hash
-            commits_list.append(info)
+                last_commit_hash = commit_hash
+                commits_list.append(info)
 
     result = {'commits': commits_list}
     return json.dumps(result)
@@ -247,8 +250,10 @@ def get_pull_requests(owner, repo):
     for item in repo.fetch_items(category='pull_request', from_date=begin, to_date=end):
         created = parse_date(item['created_at'])
         closed = parse_date(item['closed_at'])
-        merged = parse_date(
-            item['merged_at']) if item['merged_at'] == True else None
+        if item['merged_at']:
+            merged = parse_date(item['merged_at'])
+        else:
+            merged = None
 
         difference = difference_between_dates(created, closed)
         requested_reviewers = parse_arrays(

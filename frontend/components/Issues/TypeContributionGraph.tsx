@@ -83,7 +83,6 @@ const TypeContributionGraph = (props: TypeContributionProps) => {
           : (issuesAuthors[elem.creator] = 1);
       }
     });
-    console.log(issuesAuthors);
     resultIssues.push(issuesAuthors);
 
     const [countComments, countMerges] = [[], []];
@@ -104,8 +103,8 @@ const TypeContributionGraph = (props: TypeContributionProps) => {
         if (elem.was_merged) {
           if (!(elem.merged_by in integrationAuthors)) {
             integrationAuthors[elem.merged_by] = 0;
-            countMerges.push(elem.merged_by);
           }
+          countMerges.push(elem.merged_by);
         }
 
         if (elem.reviewers)
@@ -133,15 +132,56 @@ const TypeContributionGraph = (props: TypeContributionProps) => {
     // ##########################################
     // vvv Relacionado ao Git (Commits || Documentação)
 
-    /* const totalCommits = [];
-    const totalDocs = [];
-    res_commit.data['metrics'][1].forEach((elem) => {
-      totalCommits.push(elem.total);
-      totalDocs.push(elem.total_docs);
+    const [totalCommits, totalDocs] = [[], []];
+    let [commitsIdentifier, authorsDict] = [{}, {}];
+    res_commit.data['metrics'].forEach((elem) => {
+      if (
+        (!start && !end) ||
+        (elem.date >= start && elem.date <= end) ||
+        (elem.date >= start && !end) ||
+        (elem.date <= end && !start)
+      ) {
+        if (!(elem.identifier in commitsIdentifier)) {
+          authorsDict[elem.identifier] = elem.author;
+          commitsIdentifier[elem.identifier] = { total: 1 };
+          commitsIdentifier[elem.identifier].totalDocs = elem.docs ? 1 : 0;
+        } else {
+          commitsIdentifier[elem.identifier]['total'] += 1;
+          if (elem.docs) commitsIdentifier[elem.identifier].totalDocs += 1;
+        }
+      }
     });
 
-    setCommits([res_commit.data['metrics'][0], totalCommits]);
-    setDocs([res_commit.data['metrics'][0], totalDocs]); */
+    const aux = Object.keys(commitsIdentifier);
+    const values = Object.values(commitsIdentifier);
+
+    values.forEach((value) => {
+      totalCommits.push(value['total']);
+      totalDocs.push(value['totalDocs']);
+    });
+
+    const [labels, newResultCommits, newResultDocs] = [[], [], []];
+    aux.forEach((identifier) => {
+      labels.push(authorsDict[identifier]);
+    });
+    
+    let count = 0;
+    aux.forEach((identifier) => {
+      if (labels.indexOf(authorsDict[identifier]) != -1) {
+        let index = labels.indexOf(authorsDict[identifier]);
+        let identifierIndex = aux.indexOf(identifier);
+        newResultCommits[index] = totalCommits[index] + totalCommits[identifierIndex];
+        newResultDocs[index] = totalDocs[index] + totalDocs[identifierIndex];
+      } else {
+        newResultCommits.push(totalCommits[count]);
+        newResultDocs.push(totalDocs[count]);
+      }
+      labels.push(authorsDict[identifier]);
+      count++;
+    });
+
+    setCommits([labels, newResultCommits]);
+    setDocs([labels, newResultDocs]);
   };
 
   useEffect(() => {
@@ -181,7 +221,7 @@ const TypeContributionGraph = (props: TypeContributionProps) => {
               name: 'Integração',
               type: 'bar',
             },
-            /* {
+            {
               x: commits[0],
               y: commits[1],
               name: 'Commits',
@@ -192,7 +232,7 @@ const TypeContributionGraph = (props: TypeContributionProps) => {
               y: docs[1],
               name: 'Documentação',
               type: 'bar',
-            }, */
+            },
           ]}
           layout={{
             barmode: 'stack',
