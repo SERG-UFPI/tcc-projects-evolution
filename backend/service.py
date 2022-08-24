@@ -50,16 +50,15 @@ def parse_commit_identifier(commit_info):
 
 
 def str_to_json(str_data, ctx):
-    file_path = 'data/issues.json'
     if ctx == 'issues':
-        with open(file_path, 'w+') as writer:
+        with open('data/issues.json', 'w+') as writer:
             if(len(str_data) > 1):
                 writer.writelines(str_data[0])
             else:
                 writer.writelines(str_data)
             writer.close()
 
-        f = open(file_path)
+        f = open('data/issues.json')
     elif ctx == 'pr':
         with open('data/pr.json', 'w+') as writer:
             writer.writelines('[')
@@ -75,8 +74,6 @@ def str_to_json(str_data, ctx):
     data = json.load(f)
     f.close()
 
-    if os.path.isfile(file_path):
-        os.remove(file_path)    
     return data
 
 
@@ -116,7 +113,7 @@ def metrics(owner, repo):
         if "Merge pull request" not in commit['data']['message']:
             author = commit['data']['Author'].split(' <')[0]
             identifier = parse_commit_identifier(commit['data']['Author'])
-            
+
             if not '[bot]' in author and not 'gavelino' in identifier:
                 count_files = []
 
@@ -240,12 +237,12 @@ def get_pull_requests(owner, repo):
 
     date = parse_first_last_date_issue(created_list, closed_list)
 
-    # begin = datetime_to_utc(datetime.strptime(date['begin'], '%Y-%m-%d'))
-    # end = datetime_to_utc(datetime.strptime(
-    #     date['end'], '%Y-%m-%d') + timedelta(days=1))
-    begin = datetime_to_utc(datetime.strptime('2021-06-21', '%Y-%m-%d'))
+    begin = datetime_to_utc(datetime.strptime(date['begin'], '%Y-%m-%d'))
     end = datetime_to_utc(datetime.strptime(
-        '2021-06-25', '%Y-%m-%d') + timedelta(days=1))
+        date['end'], '%Y-%m-%d') + timedelta(days=1))
+    """ begin = datetime_to_utc(datetime.strptime('2021-06-21', '%Y-%m-%d'))
+    end = datetime_to_utc(datetime.strptime(
+        '2021-06-25', '%Y-%m-%d') + timedelta(days=1)) """
 
     for item in repo.fetch_items(category='pull_request', from_date=begin, to_date=end):
         created = parse_date(item['created_at'])
