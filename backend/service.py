@@ -50,15 +50,16 @@ def parse_commit_identifier(commit_info):
 
 
 def str_to_json(str_data, ctx):
+    file_path = 'data/issues.json'
     if ctx == 'issues':
-        with open('data/issues.json', 'w+') as writer:
+        with open(file_path, 'w+') as writer:
             if(len(str_data) > 1):
                 writer.writelines(str_data[0])
             else:
                 writer.writelines(str_data)
             writer.close()
 
-        f = open('data/issues.json')
+        f = open(file_path)
     elif ctx == 'pr':
         with open('data/pr.json', 'w+') as writer:
             writer.writelines('[')
@@ -74,6 +75,8 @@ def str_to_json(str_data, ctx):
     data = json.load(f)
     f.close()
 
+    if os.path.isfile(file_path):
+        os.remove(file_path)    
     return data
 
 
