@@ -89,7 +89,7 @@ const PullRequestsGraph = (props: PullRequestsProps) => {
               color: '#111111',
             },
             yaxis: {
-              title: 'Qtd. de PRs',
+              title: 'Qtd. de PRs Fechadas',
             },
             plot_bgcolor: '#fafafa',
             paper_bgcolor: '#fafafa',

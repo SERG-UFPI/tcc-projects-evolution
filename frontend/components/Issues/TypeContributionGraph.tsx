@@ -36,17 +36,6 @@ const TypeContributionGraph = (props: TypeContributionProps) => {
     });
   };
 
-  const removeDuplicates = (arr) => {
-    const result = [];
-
-    arr.forEach((el) => {
-      if (!(el in result)) result.push(el);
-    });
-
-    result.sort();
-    return result;
-  };
-
   const makeObjectsWithSameField = (arr) => {
     let maxLength = 0;
     let maxIndex = 0;
@@ -112,17 +101,20 @@ const TypeContributionGraph = (props: TypeContributionProps) => {
           });
         }
 
+        if (elem.was_merged) {
+          if (!(elem.merged_by in integrationAuthors)) {
+            integrationAuthors[elem.merged_by] = 0;
+            countMerges.push(elem.merged_by);
+          }
+        }
+
         if (elem.reviewers)
           elem.reviewers.forEach((reviewer) => {
-            if (!(reviewer in prCommentsAuthors)) {
+            if (!(reviewer in prCommentsAuthors))
               prCommentsAuthors[reviewer] = 0;
-              integrationAuthors[reviewer] = 0;
-            }
           });
         else if (!(elem.creator in prCommentsAuthors))
           prCommentsAuthors[elem.creator] = 0;
-
-        if (elem.was_merged) countMerges.push(elem.merged_by);
       }
     });
     countOccurrences(prCommentsAuthors, countComments);
