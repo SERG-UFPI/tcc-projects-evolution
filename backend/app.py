@@ -1,3 +1,4 @@
+from concurrent.futures import thread
 from dotenv import load_dotenv
 from flask import Flask
 from flask_cors import CORS
@@ -53,4 +54,4 @@ def show_metrics(owner, repo):
 
 
 if __name__ == "__main__":
-    serve(app, host='0.0.0.0', port=50)
+    serve(app, host='0.0.0.0', port=50, threads=6)
