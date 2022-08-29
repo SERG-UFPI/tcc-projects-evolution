@@ -9,6 +9,7 @@ const Plot = dynamic(() => import('react-plotly.js'), {
 
 interface CommitsAuthorsProps {
   commits: any[];
+  users: any;
   start: string | undefined;
   end: string | undefined;
 }
@@ -16,12 +17,20 @@ interface CommitsAuthorsProps {
 const CommitsAuthorsGraph = (props: CommitsAuthorsProps) => {
   const [commits, setCommits] = useState([]);
 
-  const commitsByAuthors = (response, start = undefined, end = undefined) => {
+  const commitsByAuthors = (
+    response,
+    githubUsers,
+    start = undefined,
+    end = undefined
+  ) => {
     if (start == '') start = undefined;
     if (end == '') end = undefined;
 
-    const totalCommits = [];
-    let [commitsIdentifier, authorsDict] = [{}, {}];
+    const [totalCommits, authorsDict, users] = [
+      [],
+      {},
+      Object.keys(githubUsers.data['users']),
+    ];
     response.data['metrics'].forEach((elem) => {
       if (
         (!start && !end) ||
@@ -29,47 +38,28 @@ const CommitsAuthorsGraph = (props: CommitsAuthorsProps) => {
         (elem.date >= start && !end) ||
         (elem.date <= end && !start)
       ) {
-        if (!(elem.identifier in commitsIdentifier)) {
-          authorsDict[elem.identifier] = elem.author;
-          commitsIdentifier[elem.identifier] = { total: 1 };
-        } else commitsIdentifier[elem.identifier]['total'] += 1;
+        users.forEach((user) => {
+          if (githubUsers.data['users'][user].indexOf(elem.author) != -1) {
+            if (user in authorsDict) authorsDict[user]['total'] += 1;
+            else authorsDict[user] = { total: 1 };
+          }
+        });
       }
     });
 
-    const aux = Object.keys(commitsIdentifier);
-    const values = Object.values(commitsIdentifier);
-
-    values.forEach((value) => {
-      totalCommits.push(value['total']);
+    Object.values(authorsDict).forEach((elem) => {
+      totalCommits.push(elem['total']);
     });
 
-    const [labels, newResultCommits] = [[], []];
-    aux.forEach((identifier) => {
-      labels.push(authorsDict[identifier]);
-    });
-
-    let count = 0;
-    aux.forEach((identifier) => {
-      if (labels.indexOf(authorsDict[identifier]) != -1) {
-        let index = labels.indexOf(authorsDict[identifier]);
-        let identifierIndex = aux.indexOf(identifier);
-        newResultCommits[index] =
-          totalCommits[index] + totalCommits[identifierIndex];
-      } else newResultCommits.push(totalCommits[count]);
-
-      labels.push(authorsDict[identifier]);
-      count++;
-    });
-
-    setCommits([labels, newResultCommits]);
+    setCommits([Object.keys(authorsDict), totalCommits]);
   };
 
   useEffect(() => {
-    commitsByAuthors(props.commits);
+    commitsByAuthors(props.commits, props.users);
   }, []);
 
   useEffect(() => {
-    commitsByAuthors(props.commits, props.start, props.end);
+    commitsByAuthors(props.commits, props.users, props.start, props.end);
   }, [props.start, props.end]);
 
   return (

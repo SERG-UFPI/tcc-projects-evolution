@@ -1,18 +1,13 @@
-import dynamic from 'next/dynamic';
 import styles from '../../styles/Home.module.css';
 import CommitsAuthorsGraph from './CommitsAuthorsGraph';
 import CommitsAuthorsLinesGraph from './CommitsAuthorsLinesGraph';
 import CommitsIssuesLinkGraph from './CommitsIssuesLinkGraph';
 import CommitsLinesGraph from './CommitsLinesGraph';
 
-const Plot = dynamic(() => import('react-plotly.js'), {
-  ssr: false,
-  loading: () => <div>Carregando...</div>,
-});
-
 interface CommitsSectionProps {
   commits: any[];
   metrics: any[];
+  users: any;
   start: string | undefined;
   end: string | undefined;
 }
@@ -24,6 +19,7 @@ const CommitsSection = (props: CommitsSectionProps) => {
       <div className={styles.commitsContainer}>
         <CommitsAuthorsGraph
           commits={props.metrics}
+          users={props.users}
           start={props.start}
           end={props.end}
         />
@@ -34,11 +30,13 @@ const CommitsSection = (props: CommitsSectionProps) => {
         />
         <CommitsIssuesLinkGraph
           commits={props.commits}
+          users={props.users}
           start={props.start}
           end={props.end}
         />
         <CommitsAuthorsLinesGraph
           commits={props.commits}
+          users={props.users}
           start={props.start}
           end={props.end}
         />

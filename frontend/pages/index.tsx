@@ -6,12 +6,11 @@ import IssuesSection from '../components/Issues/IssuesSection';
 import styles from '../styles/Home.module.css';
 
 export default function Home() {
-  const [issuesDates, setIssuesDates] = useState<any>([]);
-  const [issuesLifetime, setIssuesLifetime] = useState<any>([]);
-  const [issuesAuthors, setIssuesAuthors] = useState<any>([]);
+  const [issues, setIssues] = useState<any>([]);
   const [pullRequests, setPullRequests] = useState<any>([]);
   const [commits, setCommits] = useState<any>([]);
   const [metrics, setMetrics] = useState<any>([]);
+  const [users, setUsers] = useState<any>([]);
   const [repoUrl, setRepoUrl] = useState('');
   const [isDataReady, setIsDataReady] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -22,68 +21,29 @@ export default function Home() {
     setIsLoading(true);
     setIsDataReady(false);
     const urlParts = repoUrl.split('/');
+    const [owner, repo] = [
+      urlParts[urlParts.length - 2],
+      urlParts[urlParts.length - 1],
+    ];
 
     try {
       const responses = await Promise.all([
-        axios.get(
-          `https://20.163.20.169.nip.io/info/issues-dates/${
-            urlParts[urlParts.length - 2]
-          }/${urlParts[urlParts.length - 1]}`
-        ),
-        axios.get(
-          `https://20.163.20.169.nip.io/info/${
-            urlParts[urlParts.length - 2]
-          }/${urlParts[urlParts.length - 1]}`
-        ),
-        axios.get(
-          `https://20.163.20.169.nip.io/info/pr/${
-            urlParts[urlParts.length - 2]
-          }/${urlParts[urlParts.length - 1]}`
-        ),
-        axios.get(
-          `https://20.163.20.169.nip.io/info/commits/${
-            urlParts[urlParts.length - 2]
-          }/${urlParts[urlParts.length - 1]}`
-        ),
-        axios.get(
-          `https://20.163.20.169.nip.io/info/metrics/${
-            urlParts[urlParts.length - 2]
-          }/${urlParts[urlParts.length - 1]}`
-        ),
-        // axios.get(
-        //   `http://localhost:5000/info/issues-dates/${
-        //     urlParts[urlParts.length - 2]
-        //   }/${urlParts[urlParts.length - 1]}`
-        // ),
-        // axios.get(
-        //   `http://localhost:5000/info/${
-        //     urlParts[urlParts.length - 2]
-        //   }/${urlParts[urlParts.length - 1]}`
-        // ),
-        // axios.get(
-        //   `http://localhost:5000/info/pr/${
-        //     urlParts[urlParts.length - 2]
-        //   }/${urlParts[urlParts.length - 1]}`
-        // ),
-        // axios.get(
-        //   `http://localhost:5000/info/commits/${
-        //     urlParts[urlParts.length - 2]
-        //   }/${urlParts[urlParts.length - 1]}`
-        // ),
-        // axios.get(
-        //   `http://localhost:5000/info/metrics/${
-        //     urlParts[urlParts.length - 2]
-        //   }/${urlParts[urlParts.length - 1]}`
-        // ),
+        axios.get(`https://20.163.20.169.nip.io/info/pr/${owner}/${repo}`),
+        axios.get(`https://20.163.20.169.nip.io/info/users/${owner}/${repo}`),
+        axios.get(`https://20.163.20.169.nip.io/info/issues/${owner}/${repo}`),
+        axios.get(`https://20.163.20.169.nip.io/info/commits/${owner}/${repo}`),
+        axios.get(`https://20.163.20.169.nip.io/info/metrics/${owner}/${repo}`),
+        // axios.get(`http://localhost:5000/info/pr/${owner}/${repo}`),
+        // axios.get(`http://localhost:5000/info/users/${owner}/${repo}`),
+        // axios.get(`http://localhost:5000/info/issues/${owner}/${repo}`),
+        // axios.get(`http://localhost:5000/info/commits/${owner}/${repo}`),
+        // axios.get(`http://localhost:5000/info/metrics/${owner}/${repo}`),
       ]);
-
-      setIssuesDates(responses[0]);
-      setIssuesLifetime(responses[1]);
-      setIssuesAuthors(responses[1]);
-      setPullRequests(responses[2]);
+      setPullRequests(responses[0]);
+      setUsers(responses[1]);
+      setIssues(responses[2]);
       setCommits(responses[3]);
       setMetrics(responses[4]);
-      //setMetrics({});
 
       setIsDataReady(true);
       setIsLoading(false);
@@ -150,12 +110,13 @@ export default function Home() {
         </>
       ) : (
         <IssuesSection
-          issuesDates={issuesDates}
-          issuesLifetime={issuesLifetime}
-          issuesAuthors={issuesAuthors}
-          pullRequests={pullRequests}
-          commits={commits}
-          metrics={metrics}
+          {...{
+            issues,
+            pullRequests,
+            commits,
+            metrics,
+            users,
+          }}
         />
       )}
     </div>

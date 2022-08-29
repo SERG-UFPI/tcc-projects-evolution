@@ -9,7 +9,7 @@ const Plot = dynamic(() => import('react-plotly.js'), {
 });
 
 interface IssuesLifetimeProps {
-  issuesLifetime: any[];
+  issues: any[];
   start: string | undefined;
   end: string | undefined;
 }
@@ -28,20 +28,19 @@ const IssuesLifetimeGraph = (props: IssuesLifetimeProps) => {
         (elem.closed_at >= start && elem.closed_at <= end) ||
         (elem.closed_at >= start && !end) ||
         (elem.closed_at <= end && !start)
-      ) {
+      )
         lifetime.push(elem.active_days);
-      }
     });
 
     setlifetimeValues(lifetime);
   };
 
   useEffect(() => {
-    issuesByLifetime(props.issuesLifetime);
+    issuesByLifetime(props.issues);
   }, []);
 
   useEffect(() => {
-    issuesByLifetime(props.issuesLifetime, props.start, props.end);
+    issuesByLifetime(props.issues, props.start, props.end);
   }, [props.start, props.end]);
 
   return (

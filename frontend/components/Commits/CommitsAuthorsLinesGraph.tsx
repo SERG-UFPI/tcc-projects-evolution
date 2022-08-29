@@ -11,6 +11,7 @@ const Plot = dynamic(() => import('react-plotly.js'), {
 
 interface CommitsAuthorsLinesProps {
   commits: any[];
+  users: any;
   start: string | undefined;
   end: string | undefined;
 }
@@ -20,15 +21,20 @@ const CommitsAuthorsLinesGraph = (props: CommitsAuthorsLinesProps) => {
   const [info, setInfo] = useState([]);
   const [carouselIndex, setCarouselIndex] = useState(0);
 
-  const commitsByMessage = (response, start = undefined, end = undefined) => {
+  const parseDate = (date) => {
+    return date.slice(0, 4) + '-' + date.slice(4, 6) + '-' + date.slice(6, 8);
+  };
+
+  const commitsByMessage = (
+    response,
+    githubUsers,
+    start = undefined,
+    end = undefined
+  ) => {
     if (start == '') start = undefined;
     if (end == '') end = undefined;
 
-    const dates = [];
-    const allAuthors = [];
-    const addedLines = [];
-    const removedLines = [];
-
+    const [authorsDict, users] = [{}, Object.keys(githubUsers.data['users'])];
     response.data['commits'].forEach((elem) => {
       if (
         (!start && !end) ||
@@ -36,60 +42,48 @@ const CommitsAuthorsLinesGraph = (props: CommitsAuthorsLinesProps) => {
         (elem.date >= start && !end) ||
         (elem.date <= end && !start)
       ) {
-        if (!elem.author.includes('bot')) {
-          const parsed =
-            elem.date.slice(0, 4) +
-            '-' +
-            elem.date.slice(4, 6) +
-            '-' +
-            elem.date.slice(6, 8);
-          dates.push(parsed);
-          allAuthors.push(elem.author);
-          addedLines.push(elem.lines_added);
-          removedLines.push(elem.lines_removed);
-        }
-      }
-    });
+        let commitDate = parseDate(elem.date);
 
-    const nonRepeatAllAuthors = allAuthors.filter(
-      (author, index) => allAuthors.indexOf(author) === index
-    );
+        users.forEach((user) => {
+          if (githubUsers.data['users'][user].indexOf(elem.author) != -1) {
+            if (user in authorsDict) {
+              let indexRepeatedDate =
+                authorsDict[user].dates.indexOf(commitDate);
 
-    let dateByAuthor = [];
-    let addedByAuthor = [];
-    let removedByAuthor = [];
-    let info = [];
-    
-    nonRepeatAllAuthors.forEach((elem) => {
-      for (var i = 0; i < allAuthors.length; i++) {
-        if (allAuthors[i] == elem) {
-          let index = dateByAuthor.indexOf(dates[i])
-          if(index == -1) {
-            dateByAuthor.push(dates[i]);
-            addedByAuthor.push(addedLines[i]);
-            removedByAuthor.push(-removedLines[i]);
-          } else {
-            addedByAuthor[index] += addedLines[i];
-            removedByAuthor[index] -= removedLines[i];
+              if (indexRepeatedDate != -1) {
+                authorsDict[user].added[indexRepeatedDate] += elem.lines_added;
+                authorsDict[user].removed[indexRepeatedDate] -=
+                  elem.lines_removed;
+              } else {
+                authorsDict[user].added.push(elem.lines_added);
+                authorsDict[user].removed.push(-elem.lines_removed);
+                authorsDict[user].dates.push(commitDate);
+              }
+            } else {
+              authorsDict[user] = { added: [elem.lines_added] };
+              authorsDict[user].removed = [-elem.lines_removed];
+              authorsDict[user].dates = [commitDate];
+            }
           }
-        }
+        });
       }
-      info.push([dateByAuthor, addedByAuthor, removedByAuthor]);
-      dateByAuthor = [];
-      addedByAuthor = [];
-      removedByAuthor = [];
     });
 
+    const info = [];
+    Object.values(authorsDict).forEach((value) => {
+      info.push([value['dates'], value['added'], value['removed']]);
+    });
+
+    setAuthors(Object.keys(authorsDict));
     setInfo([...info]);
-    setAuthors([...nonRepeatAllAuthors]);
   };
 
   useEffect(() => {
-    commitsByMessage(props.commits);
+    commitsByMessage(props.commits, props.users);
   }, []);
 
   useEffect(() => {
-    commitsByMessage(props.commits, props.start, props.end);
+    commitsByMessage(props.commits, props.users, props.start, props.end);
   }, [props.start, props.end]);
 
   return (
