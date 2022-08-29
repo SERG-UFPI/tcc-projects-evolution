@@ -8,12 +8,11 @@ import PullRequestsGraph from './PullRequestsGraph';
 import TypeContributionGraph from './TypeContributionGraph';
 
 interface IssuesSectionProps {
-  issuesDates: any[];
-  issuesLifetime: any[];
-  issuesAuthors: any[];
+  issues: any[];
   pullRequests: any[];
   commits: any[];
   metrics: any[];
+  users: any;
 }
 
 const IssuesSection = (props: IssuesSectionProps) => {
@@ -22,36 +21,30 @@ const IssuesSection = (props: IssuesSectionProps) => {
   const [end, setEnd] = useState('');
   const [parsedEnd, setParsedEnd] = useState('');
 
-  const captureStartEndDate = (responseIssues, responseCommits) => {
-    const firstIssueDate = responseIssues.data['issues'][0].date;
-    const lastIssueDate =
-      responseIssues.data['issues'][responseIssues.data['issues'].length - 1]
-        .date;
-    const firsCommitDate = responseCommits.data['commits'][0].date;
-    const lastCommitDate =
-      responseCommits.data['commits'][
-        responseCommits.data['commits'].length - 1
-      ].date;
-    let begin = '';
-    let end = '';
+  const parseDate = (date) => {
+    return date.slice(0, 4) + '-' + date.slice(4, 6) + '-' + date.slice(6, 8);
+  };
 
-    if (firstIssueDate <= firsCommitDate) begin = firstIssueDate;
-    else begin = firsCommitDate;
+  const captureStartEndDate = (resIssues, resCommits) => {
+    const [firstIssueDate, lastIssueDate] = [
+      resIssues.data['issues'][0].date,
+      resIssues.data['issues'][resIssues.data['issues'].length - 1].date,
+    ];
+    const [firsCommitDate, lastCommitDate] = [
+      resCommits.data['commits'][0].date,
+      resCommits.data['commits'][resCommits.data['commits'].length - 1].date,
+    ];
+    let [begin, end] = ['', ''];
 
-    if (lastIssueDate >= lastCommitDate) end = lastIssueDate;
-    else end = lastCommitDate;
+    begin = firstIssueDate <= firsCommitDate ? firstIssueDate : firsCommitDate;
+    end = lastIssueDate >= lastCommitDate ? lastIssueDate : lastCommitDate;
 
-    const parsedBegin =
-      begin.slice(0, 4) + '-' + begin.slice(4, 6) + '-' + begin.slice(6, 8);
-    const parsedEnd =
-      end.slice(0, 4) + '-' + end.slice(4, 6) + '-' + end.slice(6, 8);
-
-    setStart(parsedBegin);
-    setEnd(parsedEnd);
+    setStart(parseDate(begin));
+    setEnd(parseDate(end));
   };
 
   useEffect(() => {
-    captureStartEndDate(props.issuesDates, props.commits);
+    captureStartEndDate(props.issues, props.commits);
   }, []);
 
   useEffect(() => {
@@ -100,17 +93,17 @@ const IssuesSection = (props: IssuesSectionProps) => {
       <h2 style={{ textAlign: 'center' }}>Issues</h2>
       <div className={styles.issuesContainer}>
         <IssuesDatesGraph
-          issuesDates={props.issuesDates}
+          issues={props.issues}
           start={parsedStart}
           end={parsedEnd}
         />
         <IssuesLifetimeGraph
-          issuesLifetime={props.issuesLifetime}
+          issues={props.issues}
           start={parsedStart}
           end={parsedEnd}
         />
         <IssuesAuthorsGraph
-          issuesAuthors={props.issuesAuthors}
+          issues={props.issues}
           start={parsedStart}
           end={parsedEnd}
         />
@@ -120,9 +113,10 @@ const IssuesSection = (props: IssuesSectionProps) => {
           end={parsedEnd}
         />
         <TypeContributionGraph
-          issuesAuthors={props.issuesAuthors}
+          issues={props.issues}
           pullRequests={props.pullRequests}
           metrics={props.metrics}
+          users={props.users}
           start={parsedStart}
           end={parsedEnd}
         />
@@ -131,6 +125,7 @@ const IssuesSection = (props: IssuesSectionProps) => {
       <CommitsSection
         commits={props.commits}
         metrics={props.metrics}
+        users={props.users}
         start={parsedStart}
         end={parsedEnd}
       />

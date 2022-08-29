@@ -8,7 +8,7 @@ const Plot = dynamic(() => import('react-plotly.js'), {
 });
 
 interface IssuesAuthorsProps {
-  issuesAuthors: any[];
+  issues: any[];
   start: string | undefined;
   end: string | undefined;
 }
@@ -21,8 +21,7 @@ const IssuesAuthorsGraph = (props: IssuesAuthorsProps) => {
     if (start == '') start = undefined;
     if (end == '') end = undefined;
 
-    const totalAuthors = [];
-    const authorsTotalIssuesList = [];
+    const [totalAuthors, authorsTotalIssuesList] = [[], []];
 
     response.data['issues'].forEach((elem) => {
       if (
@@ -30,9 +29,8 @@ const IssuesAuthorsGraph = (props: IssuesAuthorsProps) => {
         (elem.created_at >= start && elem.created_at <= end) ||
         (elem.created_at >= start && !end) ||
         (elem.created_at <= end && !start)
-      ) {
+      )
         totalAuthors.push(elem.creator);
-      }
     });
 
     const nonRepeatedAuthors = totalAuthors.filter(
@@ -50,11 +48,11 @@ const IssuesAuthorsGraph = (props: IssuesAuthorsProps) => {
   };
 
   useEffect(() => {
-    issuesByAuthors(props.issuesAuthors);
+    issuesByAuthors(props.issues);
   }, []);
 
   useEffect(() => {
-    issuesByAuthors(props.issuesAuthors, props.start, props.end);
+    issuesByAuthors(props.issues, props.start, props.end);
   }, [props.start, props.end]);
 
   return (

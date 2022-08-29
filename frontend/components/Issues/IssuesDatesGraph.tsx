@@ -8,7 +8,7 @@ const Plot = dynamic(() => import('react-plotly.js'), {
 });
 
 interface IssuesDatesProps {
-  issuesDates: any[],
+  issues: any[];
   start: string | undefined;
   end: string | undefined;
 }
@@ -19,57 +19,42 @@ const IssuesDatesGraph = (props: IssuesDatesProps) => {
   const [closedAt, setClosedAt] = useState([]);
   const [countClosedAt, setCountClosedAt] = useState([]);
 
-  const fillIssuesDates = (
-    elem: any,
-    dateCreatedList: string[],
-    dateClosedList: string[],
-    occurrencesByDateCreated: number[],
-    occurrencesByDateClosed: number[]
-  ) => {
-    const parsed =
-      elem.date.slice(0, 4) +
-      '-' +
-      elem.date.slice(4, 6) +
-      '-' +
-      elem.date.slice(6, 8);
-
-    if (elem['total_created'] != 0 && elem['total_closed'] == 0) {
-      dateCreatedList.push(parsed);
-      occurrencesByDateCreated.push(elem['total_created']);
-    } else if (elem['total_created'] == 0 && elem['total_closed'] != 0) {
-      dateClosedList.push(parsed);
-      occurrencesByDateClosed.push(elem['total_closed']);
-    } else {
-      dateCreatedList.push(parsed);
-      occurrencesByDateCreated.push(elem['total_created']);
-      dateClosedList.push(parsed);
-      occurrencesByDateClosed.push(elem['total_closed']);
-    }
+  const parseDate = (date) => {
+    return date.slice(0, 4) + '-' + date.slice(4, 6) + '-' + date.slice(6, 8);
   };
 
   const issuesByDates = (response, start = undefined, end = undefined) => {
-    let dateCreatedList = [];
-    let dateClosedList = [];
-    let occurrencesByDateCreated = [];
-    let occurrencesByDateClosed = [];
+    const [
+      dateCreatedList,
+      dateClosedList,
+      occurrencesByDateCreated,
+      occurrencesByDateClosed,
+    ] = [[], [], [], []];
 
     if (start == '') start = undefined;
     if (end == '') end = undefined;
 
-    response.data['issues'].forEach((elem) => {
+    response.data['dates'].forEach((elem) => {
       if (
         (!start && !end) ||
         (elem.date >= start && elem.date <= end) ||
         (elem.date >= start && !end) ||
         (elem.date <= end && !start)
       ) {
-        fillIssuesDates(
-          elem,
-          dateCreatedList,
-          dateClosedList,
-          occurrencesByDateCreated,
-          occurrencesByDateClosed
-        );
+        let date = parseDate(elem.date);
+
+        if (elem['total_created'] != 0 && elem['total_closed'] == 0) {
+          dateCreatedList.push(date);
+          occurrencesByDateCreated.push(elem['total_created']);
+        } else if (elem['total_created'] == 0 && elem['total_closed'] != 0) {
+          dateClosedList.push(date);
+          occurrencesByDateClosed.push(elem['total_closed']);
+        } else {
+          dateCreatedList.push(date);
+          occurrencesByDateCreated.push(elem['total_created']);
+          dateClosedList.push(date);
+          occurrencesByDateClosed.push(elem['total_closed']);
+        }
       }
     });
 
@@ -79,14 +64,13 @@ const IssuesDatesGraph = (props: IssuesDatesProps) => {
     setCountClosedAt([...occurrencesByDateClosed]);
   };
 
-
   useEffect(() => {
-    issuesByDates(props.issuesDates);
+    issuesByDates(props.issues);
   }, []);
 
   useEffect(() => {
-    issuesByDates(props.issuesDates, props.start, props.end);
-  }, [props.start,  props.end]);
+    issuesByDates(props.issues, props.start, props.end);
+  }, [props.start, props.end]);
 
   return (
     <>

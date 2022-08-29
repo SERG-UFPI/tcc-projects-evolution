@@ -8,9 +8,10 @@ const Plot = dynamic(() => import('react-plotly.js'), {
 });
 
 interface TypeContributionProps {
-  issuesAuthors: any[];
+  issues: any[];
   pullRequests: any[];
   metrics: any[];
+  users: any;
   start: string | undefined;
   end: string | undefined;
 }
@@ -60,9 +61,10 @@ const TypeContributionGraph = (props: TypeContributionProps) => {
   };
 
   const typeOfContribution = (
-    res_issues,
-    res_pr,
-    res_commit,
+    resIssues,
+    resPr,
+    resCommit,
+    usersData,
     start = undefined,
     end = undefined
   ) => {
@@ -71,7 +73,7 @@ const TypeContributionGraph = (props: TypeContributionProps) => {
 
     let resultIssues = [];
     let issuesAuthors = {};
-    res_issues.data['issues'].forEach((elem) => {
+    resIssues.data['issues'].forEach((elem) => {
       if (
         (!start && !end) ||
         (elem.created_at >= start && elem.created_at <= end) ||
@@ -87,7 +89,7 @@ const TypeContributionGraph = (props: TypeContributionProps) => {
 
     const [countComments, countMerges] = [[], []];
     let [prCommentsAuthors, integrationAuthors] = [{}, {}];
-    res_pr.data['pr'].forEach((elem) => {
+    resPr.data['pr'].forEach((elem) => {
       if (
         (!start && !end) ||
         (elem.created >= start && elem.created <= end) ||
@@ -132,67 +134,58 @@ const TypeContributionGraph = (props: TypeContributionProps) => {
     // ##########################################
     // vvv Relacionado ao Git (Commits || Documentação)
 
-    const [totalCommits, totalDocs] = [[], []];
-    let [commitsIdentifier, authorsDict] = [{}, {}];
-    res_commit.data['metrics'].forEach((elem) => {
+    const [totalCommits, totalDocs, githubUsers] = [
+      [],
+      [],
+      Object.keys(usersData.data['users']),
+    ];
+
+    let authorsDict = {};
+    resCommit.data['metrics'].forEach((elem) => {
       if (
         (!start && !end) ||
         (elem.date >= start && elem.date <= end) ||
         (elem.date >= start && !end) ||
         (elem.date <= end && !start)
       ) {
-        if (!(elem.identifier in commitsIdentifier)) {
-          authorsDict[elem.identifier] = elem.author;
-          commitsIdentifier[elem.identifier] = { total: 1 };
-          commitsIdentifier[elem.identifier].totalDocs = elem.docs ? 1 : 0;
-        } else {
-          commitsIdentifier[elem.identifier]['total'] += 1;
-          if (elem.docs) commitsIdentifier[elem.identifier].totalDocs += 1;
-        }
+        githubUsers.forEach((user) => {
+          if (usersData.data['users'][user].indexOf(elem.author) != -1) {
+            if (user in authorsDict) {
+              authorsDict[user]['total'] += 1;
+              if (elem.docs) authorsDict[user]['totalDocs'] += 1;
+            } else {
+              authorsDict[user] = { total: 1 };
+              authorsDict[user].totalDocs = elem.docs ? 1 : 0;
+            }
+          }
+        });
       }
-    });
-
-    const aux = Object.keys(commitsIdentifier);
-    const values = Object.values(commitsIdentifier);
-
-    values.forEach((value) => {
-      totalCommits.push(value['total']);
-      totalDocs.push(value['totalDocs']);
-    });
-
-    const [labels, newResultCommits, newResultDocs] = [[], [], []];
-    aux.forEach((identifier) => {
-      labels.push(authorsDict[identifier]);
     });
     
-    let count = 0;
-    aux.forEach((identifier) => {
-      if (labels.indexOf(authorsDict[identifier]) != -1) {
-        let index = labels.indexOf(authorsDict[identifier]);
-        let identifierIndex = aux.indexOf(identifier);
-        newResultCommits[index] = totalCommits[index] + totalCommits[identifierIndex];
-        newResultDocs[index] = totalDocs[index] + totalDocs[identifierIndex];
-      } else {
-        newResultCommits.push(totalCommits[count]);
-        newResultDocs.push(totalDocs[count]);
-      }
-      labels.push(authorsDict[identifier]);
-      count++;
+    Object.values(authorsDict).forEach((elem) => {
+      totalCommits.push(elem['total']);
+      totalDocs.push(elem['totalDocs']);
     });
 
-    setCommits([labels, newResultCommits]);
-    setDocs([labels, newResultDocs]);
+    setCommits([Object.keys(authorsDict), totalCommits]);
+    setDocs([Object.keys(authorsDict), totalDocs]);
   };
 
   useEffect(() => {
-    typeOfContribution(props.issuesAuthors, props.pullRequests, props.metrics);
+    typeOfContribution(
+      props.issues,
+      props.pullRequests,
+      props.metrics,
+      props.users
+    );
   }, []);
 
   useEffect(() => {
     typeOfContribution(
-      props.issuesAuthors,
+      props.issues,
       props.pullRequests,
       props.metrics,
+      props.users,
       props.start,
       props.end
     );

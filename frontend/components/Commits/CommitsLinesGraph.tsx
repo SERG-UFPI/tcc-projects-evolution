@@ -18,14 +18,15 @@ const CommitsLinesGraph = (props: CommitsLinesProps) => {
   const [removedFiles, setRemovedFiles] = useState([]);
   const [dateCommits, setDateCommits] = useState([]);
 
+  const parseDate = (date) => {
+    return date.slice(0, 4) + '-' + date.slice(4, 6) + '-' + date.slice(6, 8);
+  };
+
   const linesAddedRemoved = (response, start = undefined, end = undefined) => {
     if (start == '') start = undefined;
     if (end == '') end = undefined;
 
-    const addedFiles = [];
-    const removedFiles = [];
-    const dates = [];
-
+    const [addedList, removedList, dates] = [[], [], []]
     response.data['commits'].forEach((elem) => {
       if (
         (!start && !end) ||
@@ -33,21 +34,23 @@ const CommitsLinesGraph = (props: CommitsLinesProps) => {
         (elem.date >= start && !end) ||
         (elem.date <= end && !start)
       ) {
-        const parsed =
-          elem.date.slice(0, 4) +
-          '-' +
-          elem.date.slice(4, 6) +
-          '-' +
-          elem.date.slice(6, 8);
-        dates.push(parsed);
-        addedFiles.push(elem.lines_added);
-        removedFiles.push(-elem.lines_removed);
+        let commitDate = parseDate(elem.date)
+        let indexRepeatedDate = dates.indexOf(commitDate)
+
+        if(indexRepeatedDate == -1) {
+          dates.push(commitDate)
+          addedList.push(elem.lines_added)
+          removedList.push(-elem.lines_removed)
+        } else {
+          addedList[indexRepeatedDate] += elem.lines_added
+          removedList[indexRepeatedDate] -= elem.lines_removed
+        }
       }
     });
 
     setDateCommits([...dates]);
-    setAddedFiles([...addedFiles]);
-    setRemovedFiles([...removedFiles]);
+    setAddedFiles([...addedList]);
+    setRemovedFiles([...removedList]);
   };
 
   useEffect(() => {

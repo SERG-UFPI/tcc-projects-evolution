@@ -9,27 +9,26 @@ const Plot = dynamic(() => import('react-plotly.js'), {
 
 interface CommitsIssuesLinkProps {
   commits: any[];
+  users: any;
   start: string | undefined;
   end: string | undefined;
 }
 
 const CommitsIssuesLinkGraph = (props: CommitsIssuesLinkProps) => {
-  const [commitLinkAuthors, setcommitLinkAuthors] = useState([]);
-  const [nonCommitLinkAuthors, setNonCommitLinkAuthors] = useState([]);
-  const [commitsWithLink, setCommitsWithLink] = useState([]);
-  const [commitsWithoutLink, setCommitsWithoutLink] = useState([]);
+  const [authors, setAuthors] = useState([]);
+  const [commitsIssuesLink, setCommitsIssuesLink] = useState([]);
+  const [commitsNonIssuesLink, setNonCommitsWithLink] = useState([]);
 
-  const commitsByMessage = (response, start = undefined, end = undefined) => {
+  const commitsByMessage = (
+    response,
+    githubUsers,
+    start = undefined,
+    end = undefined
+  ) => {
     if (start == '') start = undefined;
     if (end == '') end = undefined;
 
-    const issueLinkAuthors = [];
-    const nonIssueLinkAuthors = [];
-    const issueLinkTotal = [];
-    const nonIssueLinkTotal = [];
-    const aux = [];
-    let authorsDict = {};
-
+    const [authorsDict, users] = [{}, Object.keys(githubUsers.data['users'])];
     response.data['commits'].forEach((elem) => {
       if (
         (!start && !end) ||
@@ -37,62 +36,39 @@ const CommitsIssuesLinkGraph = (props: CommitsIssuesLinkProps) => {
         (elem.date >= start && !end) ||
         (elem.date <= end && !start)
       ) {
-        if (aux.indexOf(elem.identifier) == -1) {
-          authorsDict[`${elem.identifier}`] = elem.author;
-          aux.push(elem.identifier);
-        }
-
-        if (!elem.message.includes('Merge')) {
-          if (!elem.message.includes('bot')) {
-            elem.message.includes('#')
-              ? issueLinkAuthors.push(elem.identifier)
-              : nonIssueLinkAuthors.push(elem.identifier);
+        users.forEach((user) => {
+          if (githubUsers.data['users'][user].indexOf(elem.author) != -1) {
+            if (user in authorsDict) {
+              elem.message.includes('#')
+                ? (authorsDict[user]['issueLink'] += 1)
+                : (authorsDict[user]['nonIssueLink'] += 1);
+            } else {
+              elem.message.includes('#')
+                ? (authorsDict[user] = { issueLink: 1, nonIssueLink: 0 })
+                : (authorsDict[user] = { issueLink: 0, nonIssueLink: 1 });
+            }
           }
-        }
+        });
       }
     });
 
-    const nonRepeatedIssueLinkAuthors = issueLinkAuthors.filter(
-      (author, index) => issueLinkAuthors.indexOf(author) === index
-    );
+    const [totalIssuesLink, totalNonIssuesLink] = [[], []];
+    Object.values(authorsDict).forEach((elem) => {
+      totalIssuesLink.push(elem['issueLink']);
+      totalNonIssuesLink.push(elem['nonIssueLink']);
+    });
 
-    const nonRepeatedNonIssueLinkAuthors = nonIssueLinkAuthors.filter(
-      (author, index) => nonIssueLinkAuthors.indexOf(author) === index
-    );
-
-    nonRepeatedIssueLinkAuthors.forEach((author) =>
-      issueLinkTotal.push(issueLinkAuthors.filter((x) => x == author).length)
-    );
-
-    nonRepeatedNonIssueLinkAuthors.forEach((author) =>
-      nonIssueLinkTotal.push(
-        nonIssueLinkAuthors.filter((x) => x == author).length
-      )
-    );
-
-    const linkAuthors = [];
-    const nonLinkAuthors = [];
-
-    nonRepeatedIssueLinkAuthors.forEach((el) =>
-      linkAuthors.push(authorsDict[el])
-    );
-
-    nonRepeatedNonIssueLinkAuthors.forEach((el) =>
-      nonLinkAuthors.push(authorsDict[el])
-    );
-
-    setcommitLinkAuthors([...linkAuthors]);
-    setNonCommitLinkAuthors([...nonLinkAuthors]);
-    setCommitsWithLink([...issueLinkTotal]);
-    setCommitsWithoutLink([...nonIssueLinkTotal]);
+    setAuthors(Object.keys(authorsDict));
+    setCommitsIssuesLink([...totalIssuesLink]);
+    setNonCommitsWithLink([...totalNonIssuesLink]);
   };
 
   useEffect(() => {
-    commitsByMessage(props.commits);
+    commitsByMessage(props.commits, props.users);
   }, []);
 
   useEffect(() => {
-    commitsByMessage(props.commits, props.start, props.end);
+    commitsByMessage(props.commits, props.users, props.start, props.end);
   }, [props.start, props.end]);
 
   return (
@@ -101,14 +77,14 @@ const CommitsIssuesLinkGraph = (props: CommitsIssuesLinkProps) => {
         <Plot
           data={[
             {
-              x: commitLinkAuthors,
-              y: commitsWithLink,
+              x: authors,
+              y: commitsIssuesLink,
               name: 'Com Link',
               type: 'bar',
             },
             {
-              x: nonCommitLinkAuthors,
-              y: commitsWithoutLink,
+              x: authors,
+              y: commitsNonIssuesLink,
               name: 'Sem Link',
               type: 'bar',
             },
