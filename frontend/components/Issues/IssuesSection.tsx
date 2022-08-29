@@ -27,8 +27,8 @@ const IssuesSection = (props: IssuesSectionProps) => {
 
   const captureStartEndDate = (resIssues, resCommits) => {
     const [firstIssueDate, lastIssueDate] = [
-      resIssues.data['issues'][0].date,
-      resIssues.data['issues'][resIssues.data['issues'].length - 1].date,
+      resIssues.data['issues'][0].created_at,
+      resIssues.data['issues'][resIssues.data['issues'].length - 1].created_at,
     ];
     const [firsCommitDate, lastCommitDate] = [
       resCommits.data['commits'][0].date,
