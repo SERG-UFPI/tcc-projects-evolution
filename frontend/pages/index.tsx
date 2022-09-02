@@ -9,7 +9,6 @@ export default function Home() {
   const [issues, setIssues] = useState<any>([]);
   const [pullRequests, setPullRequests] = useState<any>([]);
   const [commits, setCommits] = useState<any>([]);
-  const [metrics, setMetrics] = useState<any>([]);
   const [users, setUsers] = useState<any>([]);
   const [repoUrl, setRepoUrl] = useState('');
   const [isDataReady, setIsDataReady] = useState(false);
@@ -32,18 +31,11 @@ export default function Home() {
         axios.get(`https://20.163.20.169.nip.io/info/users/${owner}/${repo}`),
         axios.get(`https://20.163.20.169.nip.io/info/issues/${owner}/${repo}`),
         axios.get(`https://20.163.20.169.nip.io/info/commits/${owner}/${repo}`),
-        axios.get(`https://20.163.20.169.nip.io/info/metrics/${owner}/${repo}`),
-        // axios.get(`http://localhost:5000/info/pr/${owner}/${repo}`),
-        // axios.get(`http://localhost:5000/info/users/${owner}/${repo}`),
-        // axios.get(`http://localhost:5000/info/issues/${owner}/${repo}`),
-        // axios.get(`http://localhost:5000/info/commits/${owner}/${repo}`),
-        // axios.get(`http://localhost:5000/info/metrics/${owner}/${repo}`),
       ]);
       setPullRequests(responses[0]);
       setUsers(responses[1]);
       setIssues(responses[2]);
       setCommits(responses[3]);
-      setMetrics(responses[4]);
 
       setIsDataReady(true);
       setIsLoading(false);
@@ -114,7 +106,6 @@ export default function Home() {
             issues,
             pullRequests,
             commits,
-            metrics,
             users,
           }}
         />

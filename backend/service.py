@@ -1,6 +1,6 @@
 import json
 import os
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 
 import github
 import requests
@@ -35,12 +35,12 @@ def format_commit_date(date):
     return str(clear_date).split(' ')[0].replace('-', '')
 
 
-def commit_repo(owner, repo):
+def commit_repo(owner, repo, branches_list=None):
     repo_url = f'http://github.com/{owner}/{repo}.git'
     repo_dir = f'/tmp/{repo}.git'
     repo = Git(uri=repo_url, gitpath=repo_dir)
 
-    return repo.fetch()
+    return repo.fetch(branches=branches_list)
 
 
 def parse_commit_identifier(commit_info):
@@ -89,10 +89,13 @@ def get_commits(owner, repo):
         if ("Merge pull request" not in message and "Merge branch" not in message and "Merge remote" not in message) and "gavelino" not in identifier:
             added = 0
             removed = 0
+            count_files = []
 
             for files in commit['data']['files']:
                 total_added = files.get('added')
                 total_removed = files.get('removed')
+                if('.md' in files['file']):
+                    count_files.append(identifier)
 
                 if(total_added and total_removed):
                     if(not total_added == '-' and not total_removed == '-'):
@@ -110,35 +113,14 @@ def get_commits(owner, repo):
                     'message': message,
                     'lines_added': added,
                     'lines_removed': removed,
-                    'files_changed': commit['data']['files']
+                    'files_changed': commit['data']['files'],
+                    'docs': True if len(count_files) > 0 else False
                 }
 
                 last_commit_hash = commit_hash
                 commits_list.append(info)
 
     result = {'commits': commits_list}
-    return json.dumps(result)
-
-
-def metrics(owner, repo):
-    github_dict = []
-    result = json.loads(get_commits(owner, repo))
-
-    for commit in result['commits']:
-        count_files = []
-
-        for files in commit['files_changed']:
-            if('.md' in files['file']):
-                count_files.append(commit['identifier'])
-
-        github_dict.append({
-            'date': commit['date'],
-            'identifier': commit['identifier'],
-            'author': commit['author'],
-            'docs': True if len(count_files) > 0 else False
-        })
-
-    result = {'metrics': github_dict}
     return json.dumps(result)
 
 
@@ -165,9 +147,15 @@ def get_issues(owner, repo):
     repo = GitHub(owner=owner, repository=repo,
                   api_token=[os.environ['token']])
     issues_list = []
+    authors_dict = {}
 
     for item in repo.fetch():
-        if not 'pull_request' in item['data']:
+        if 'pull_request' in item['data']:
+            pass
+        else:
+            issue_number = item['data']['number']
+            authors_dict[issue_number] = {}
+
             created = parse_date(item['data']['created_at'])
             labels = parse_arrays(item['data']['labels'], 'name')
             assignees = parse_arrays(item['data']['assignees'], 'login')
@@ -178,15 +166,24 @@ def get_issues(owner, repo):
             else:
                 closed, difference = (None for i in range(2))
 
+            if item['data']['comments'] > 0:
+                for user in item['data']['comments_data']:
+                    login_github = user['user']['login']
+                    if login_github not in authors_dict.keys():
+                        authors_dict[issue_number][login_github] = 1
+                    else:
+                        authors_dict[issue_number][login_github] += 1
+
             info = {
-                'id': item['data']['number'],
-                "number": f"#{item['data']['number']}",
+                'id': issue_number,
+                "number": f"#{issue_number}",
                 'title': item['data']['title'],
                 'creator': item['data']['user']['login'],
                 'state': item['data']['state'],
                 'labels': labels,
                 'assignees': assignees,
                 'comments': item['data']['comments'],
+                'comments_authors': authors_dict[issue_number],
                 'created_at': created,
                 'closed_at': closed,
                 "active_days": difference,
@@ -241,7 +238,7 @@ def get_pull_requests(owner, repo):
                   api_token=[os.environ['token']])
 
     pr_list, created_list, closed_list = ([] for i in range(3))
-    authors_dict, result = ({} for i in range(2))
+    authors_dict, pr_title_dict, date_dict, result = ({} for i in range(4))
 
     for item in repo.fetch():
         if not 'pull_request' in item['data']:
@@ -249,6 +246,7 @@ def get_pull_requests(owner, repo):
             if item['data']['closed_at']:
                 closed_list.append(item['data']['closed_at'])
         else:
+            pr_title_dict[item['data']['number']] = item['data']['title']
             number = str(item['data']['number'])
             authors_dict[number] = {}
 
@@ -260,24 +258,33 @@ def get_pull_requests(owner, repo):
                 else:
                     authors_dict[number][reviewer] += 1
 
-    date = parse_first_last_date_issue(created_list, closed_list)
+    if closed_list:
+        date_dict = parse_first_last_date_issue(created_list, closed_list)
+    else:
+        created_list.sort()
+        date_dict['begin'] = created_list[0].split('T')[0]
+        date_dict['end'] = str(date.today())
 
-    begin = datetime_to_utc(datetime.strptime(date['begin'], '%Y-%m-%d'))
+    begin = datetime_to_utc(datetime.strptime(date_dict['begin'], '%Y-%m-%d'))
     end = datetime_to_utc(datetime.strptime(
-        date['end'], '%Y-%m-%d') + timedelta(days=1))
+        date_dict['end'], '%Y-%m-%d') + timedelta(days=1))
     """ begin = datetime_to_utc(datetime.strptime('2021-06-21', '%Y-%m-%d'))
     end = datetime_to_utc(datetime.strptime(
         '2021-06-25', '%Y-%m-%d') + timedelta(days=1)) """
 
+    default_branch = ''
     for item in repo.fetch_items(category='pull_request', from_date=begin, to_date=end):
         created = parse_date(item['created_at'])
-        closed = parse_date(item['closed_at'])
+        if item['closed_at']:
+            closed = parse_date(item['closed_at'])
+            difference = difference_between_dates(created, closed)
+        else:
+            difference = None
         if item['merged_at']:
             merged = parse_date(item['merged_at'])
         else:
             merged = None
 
-        difference = difference_between_dates(created, closed)
         requested_reviewers = parse_arrays(
             item['requested_reviewers'], 'login')
         reviewers_obj = parse_arrays(item['reviews_data'], 'user')
@@ -299,7 +306,9 @@ def get_pull_requests(owner, repo):
                     authors_dict[pr_number][reviewer] += 1
 
         info = {
-            'number': item['number'],
+            'id': item['number'],
+            'number': f"#{item['number']}",
+            'title': pr_title_dict[item['number']],
             'creator': item['user']['login'],
             'reviewers': requested_reviewers,
             'created': created,
@@ -309,10 +318,12 @@ def get_pull_requests(owner, repo):
             'was_merged': item['merged'],
             'merged_by': item['merged_by']['login'] if item['merged_by'] else None,
             'comments': item['comments'] + item['review_comments'] + count_comments,
-            'comments_authors': authors_dict[pr_number]
+            'comments_authors': authors_dict[pr_number],
+            'url': item['html_url']
         }
-
+        default_branch = item['head']['repo']['default_branch']
         pr_list.append(info)
 
     result['pr'] = sorted(pr_list, key=lambda d: d['number'])
+    result['default'] = default_branch
     return json.dumps(result)

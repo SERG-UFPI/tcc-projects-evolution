@@ -1,6 +1,8 @@
 import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
 import styles from '../../styles/Home.module.css';
+import Popup from 'reactjs-popup';
+import IssuesDatesModal from '../Modal/Issues/IssuesDatesModal';
 
 const Plot = dynamic(() => import('react-plotly.js'), {
   ssr: false,
@@ -18,6 +20,9 @@ const IssuesDatesGraph = (props: IssuesDatesProps) => {
   const [countCreatedAt, setCountCreatedAt] = useState([]);
   const [closedAt, setClosedAt] = useState([]);
   const [countClosedAt, setCountClosedAt] = useState([]);
+  const [point, setPoint] = useState({});
+  const [open, setOpen] = useState(false);
+  const closeModal = () => setOpen(false);
 
   const parseDate = (date) => {
     return date.slice(0, 4) + '-' + date.slice(4, 6) + '-' + date.slice(6, 8);
@@ -31,9 +36,6 @@ const IssuesDatesGraph = (props: IssuesDatesProps) => {
       occurrencesByDateClosed,
     ] = [[], [], [], []];
 
-    if (start == '') start = undefined;
-    if (end == '') end = undefined;
-
     response.data['dates'].forEach((elem) => {
       if (
         (!start && !end) ||
@@ -41,7 +43,7 @@ const IssuesDatesGraph = (props: IssuesDatesProps) => {
         (elem.date >= start && !end) ||
         (elem.date <= end && !start)
       ) {
-        let date = parseDate(elem.date);
+        const date = parseDate(elem.date);
 
         if (elem['total_created'] != 0 && elem['total_closed'] == 0) {
           dateCreatedList.push(date);
@@ -114,8 +116,21 @@ const IssuesDatesGraph = (props: IssuesDatesProps) => {
             paper_bgcolor: '#fafafa',
             width: 655,
           }}
+          onClick={(event) => {
+            setPoint(event.points[0]);
+            setOpen(true);
+          }}
         />
       </div>
+      <Popup open={open} onClose={closeModal}>
+        <IssuesDatesModal
+          onCloseModal={closeModal}
+          point={point}
+          issues={props.issues}
+          start={props.start}
+          end={props.end}
+        />
+      </Popup>
     </>
   );
 };

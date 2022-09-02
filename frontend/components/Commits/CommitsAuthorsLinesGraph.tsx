@@ -3,6 +3,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
 import styles from '../../styles/Home.module.css';
+import Popup from 'reactjs-popup';
+import CommitsAuthorsLinesModal from '../Modal/Commits/CommitsAuthorsLinesModal';
 
 const Plot = dynamic(() => import('react-plotly.js'), {
   ssr: false,
@@ -20,6 +22,9 @@ const CommitsAuthorsLinesGraph = (props: CommitsAuthorsLinesProps) => {
   const [authors, setAuthors] = useState([]);
   const [info, setInfo] = useState([]);
   const [carouselIndex, setCarouselIndex] = useState(0);
+  const [point, setPoint] = useState({});
+  const [open, setOpen] = useState(false);
+  const closeModal = () => setOpen(false);
 
   const parseDate = (date) => {
     return date.slice(0, 4) + '-' + date.slice(4, 6) + '-' + date.slice(6, 8);
@@ -139,6 +144,10 @@ const CommitsAuthorsLinesGraph = (props: CommitsAuthorsLinesProps) => {
                 title: 'Linhas',
               },
             }}
+            onClick={(event) => {
+              setPoint(event.points[0]);
+              setOpen(true);
+            }}
           />
           <button
             onClick={() => {
@@ -153,6 +162,17 @@ const CommitsAuthorsLinesGraph = (props: CommitsAuthorsLinesProps) => {
           </button>
         </div>
       </div>
+      <Popup open={open} onClose={closeModal}>
+        <CommitsAuthorsLinesModal
+          onCloseModal={closeModal}
+          point={point}
+          commits={props.commits}
+          users={props.users}
+          author={authors[carouselIndex]}
+          start={props.start}
+          end={props.end}
+        />
+      </Popup>
     </>
   );
 };

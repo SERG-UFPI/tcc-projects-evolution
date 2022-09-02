@@ -1,6 +1,8 @@
 import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
 import styles from '../../styles/Home.module.css';
+import Popup from 'reactjs-popup';
+import TypeContributionModal from '../Modal/Issues/TypeContributionModal';
 
 const Plot = dynamic(() => import('react-plotly.js'), {
   ssr: false,
@@ -10,7 +12,7 @@ const Plot = dynamic(() => import('react-plotly.js'), {
 interface TypeContributionProps {
   issues: any[];
   pullRequests: any[];
-  metrics: any[];
+  commits: any[];
   users: any;
   start: string | undefined;
   end: string | undefined;
@@ -22,6 +24,9 @@ const TypeContributionGraph = (props: TypeContributionProps) => {
   const [integration, setIntegration] = useState([]);
   const [commits, setCommits] = useState([]);
   const [docs, setDocs] = useState([]);
+  const [point, setPoint] = useState({});
+  const [open, setOpen] = useState(false);
+  const closeModal = () => setOpen(false);
 
   const sortObject = (obj) => {
     obj = Object.keys(obj)
@@ -29,6 +34,10 @@ const TypeContributionGraph = (props: TypeContributionProps) => {
       .reduce((acc, key) => ({ ...acc, [key]: obj[key] }), {});
 
     return [Object.keys(obj), Object.values(obj)];
+  };
+
+  const sumObjects = (arr, key) => {
+    return arr.reduce((a, b) => a + (b[key] || 0), 0);
   };
 
   const countOccurrences = (obj, arr) => {
@@ -60,6 +69,25 @@ const TypeContributionGraph = (props: TypeContributionProps) => {
     return [];
   };
 
+  const unifyObjects = (arr) => {
+    let [highestLength, highestItem] = [0, 0];
+
+    for (let i = 0; i < arr.length; i++) {
+      let objLength = Object.keys(arr[i]).length;
+      if (objLength > highestLength) {
+        highestLength = objLength;
+        highestItem = i;
+      }
+    }
+
+    const authorsResult = {};
+    Object.keys(arr[highestItem]).forEach((author) => {
+      authorsResult[author] = sumObjects(arr, author);
+    });
+
+    return authorsResult;
+  };
+
   const typeOfContribution = (
     resIssues,
     resPr,
@@ -71,8 +99,8 @@ const TypeContributionGraph = (props: TypeContributionProps) => {
     if (start == '') start = undefined;
     if (end == '') end = undefined;
 
-    let resultIssues = [];
-    let issuesAuthors = {};
+    const [resultIssues, countIssuesComments] = [[], []];
+    let [issuesAuthors, issuesCommentsAuthors] = [{}, {}];
     resIssues.data['issues'].forEach((elem) => {
       if (
         (!start && !end) ||
@@ -83,8 +111,16 @@ const TypeContributionGraph = (props: TypeContributionProps) => {
         elem['creator'] in issuesAuthors
           ? issuesAuthors[elem.creator]++
           : (issuesAuthors[elem.creator] = 1);
+
+        if (elem.comments_authors) {
+          Object.keys(elem.comments_authors).forEach((author) => {
+            countIssuesComments.push(author);
+          });
+        }
       }
     });
+    countOccurrences(issuesCommentsAuthors, countIssuesComments);
+
     resultIssues.push(issuesAuthors);
 
     const [countComments, countMerges] = [[], []];
@@ -121,7 +157,12 @@ const TypeContributionGraph = (props: TypeContributionProps) => {
     countOccurrences(prCommentsAuthors, countComments);
     countOccurrences(integrationAuthors, countMerges);
 
-    resultIssues.push(prCommentsAuthors);
+    const commentAuthorsResult = unifyObjects([
+      issuesCommentsAuthors,
+      prCommentsAuthors,
+    ]);
+
+    resultIssues.push(commentAuthorsResult);
     resultIssues.push(integrationAuthors);
 
     makeObjectsWithSameField(resultIssues);
@@ -141,7 +182,7 @@ const TypeContributionGraph = (props: TypeContributionProps) => {
     ];
 
     let authorsDict = {};
-    resCommit.data['metrics'].forEach((elem) => {
+    resCommit.data['commits'].forEach((elem) => {
       if (
         (!start && !end) ||
         (elem.date >= start && elem.date <= end) ||
@@ -161,7 +202,7 @@ const TypeContributionGraph = (props: TypeContributionProps) => {
         });
       }
     });
-    
+
     Object.values(authorsDict).forEach((elem) => {
       totalCommits.push(elem['total']);
       totalDocs.push(elem['totalDocs']);
@@ -175,7 +216,7 @@ const TypeContributionGraph = (props: TypeContributionProps) => {
     typeOfContribution(
       props.issues,
       props.pullRequests,
-      props.metrics,
+      props.commits,
       props.users
     );
   }, []);
@@ -184,7 +225,7 @@ const TypeContributionGraph = (props: TypeContributionProps) => {
     typeOfContribution(
       props.issues,
       props.pullRequests,
-      props.metrics,
+      props.commits,
       props.users,
       props.start,
       props.end
@@ -241,8 +282,24 @@ const TypeContributionGraph = (props: TypeContributionProps) => {
             paper_bgcolor: '#fafafa',
             width: 655,
           }}
+          onClick={(event) => {
+            setPoint(event.points[0]);
+            setOpen(true);
+          }}
         />
       </div>
+      <Popup open={open} onClose={closeModal}>
+        <TypeContributionModal
+          onCloseModal={closeModal}
+          point={point}
+          issues={props.issues}
+          pullRequests={props.pullRequests}
+          commits={props.commits}
+          users={props.users}
+          start={props.start}
+          end={props.end}
+        />
+      </Popup>
     </>
   );
 };

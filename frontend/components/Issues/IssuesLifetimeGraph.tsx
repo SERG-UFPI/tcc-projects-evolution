@@ -2,6 +2,8 @@
 import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
 import styles from '../../styles/Home.module.css';
+import Popup from 'reactjs-popup';
+import IssuesLifetimeModal from '../Modal/Issues/IssuesLifetimeModal';
 
 const Plot = dynamic(() => import('react-plotly.js'), {
   ssr: false,
@@ -16,6 +18,9 @@ interface IssuesLifetimeProps {
 
 const IssuesLifetimeGraph = (props: IssuesLifetimeProps) => {
   const [lifetimeValues, setlifetimeValues] = useState([]);
+  const [point, setPoint] = useState({});
+  const [open, setOpen] = useState(false);
+  const closeModal = () => setOpen(false);
 
   const issuesByLifetime = (response, start = undefined, end = undefined) => {
     if (start == '') start = undefined;
@@ -77,8 +82,21 @@ const IssuesLifetimeGraph = (props: IssuesLifetimeProps) => {
             paper_bgcolor: '#fafafa',
             width: 655,
           }}
+          onClick={(event) => {
+            setPoint(event.points[0]);
+            setOpen(true);
+          }}
         />
       </div>
+      <Popup open={open} onClose={closeModal}>
+        <IssuesLifetimeModal
+          onCloseModal={closeModal}
+          point={point}
+          issues={props.issues}
+          start={props.start}
+          end={props.end}
+        />
+      </Popup>
     </>
   );
 };

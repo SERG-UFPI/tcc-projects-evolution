@@ -3,8 +3,7 @@ from flask import Flask
 from flask_cors import CORS
 from waitress import serve
 
-from service import (get_commits, get_pull_requests, issues, metrics,
-                     user_commits)
+from service import get_commits, get_pull_requests, issues, user_commits
 
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
@@ -17,7 +16,6 @@ def home():
 
 
 @app.route('/info/issues/<owner>/<repo>')
-
 def show_issues(owner, repo):
     result = issues(owner, repo)
 
@@ -34,13 +32,6 @@ def show_pr(owner, repo):
 @app.route('/info/commits/<owner>/<repo>')
 def show_total_commits(owner, repo):
     result = get_commits(owner, repo)
-
-    return result
-
-
-@app.route('/info/metrics/<owner>/<repo>')
-def show_metrics(owner, repo):
-    result = metrics(owner, repo)
 
     return result
 

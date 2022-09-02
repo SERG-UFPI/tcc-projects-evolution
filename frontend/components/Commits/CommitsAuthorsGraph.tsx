@@ -1,6 +1,8 @@
 import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
 import styles from '../../styles/Home.module.css';
+import Popup from 'reactjs-popup';
+import CommitsAuthorsModal from '../Modal/Commits/CommitsAuthorsModal';
 
 const Plot = dynamic(() => import('react-plotly.js'), {
   ssr: false,
@@ -16,6 +18,9 @@ interface CommitsAuthorsProps {
 
 const CommitsAuthorsGraph = (props: CommitsAuthorsProps) => {
   const [commits, setCommits] = useState([]);
+  const [point, setPoint] = useState({});
+  const [open, setOpen] = useState(false);
+  const closeModal = () => setOpen(false);
 
   const commitsByAuthors = (
     response,
@@ -31,7 +36,8 @@ const CommitsAuthorsGraph = (props: CommitsAuthorsProps) => {
       {},
       Object.keys(githubUsers.data['users']),
     ];
-    response.data['metrics'].forEach((elem) => {
+
+    response.data['commits'].forEach((elem) => {
       if (
         (!start && !end) ||
         (elem.date >= start && elem.date <= end) ||
@@ -84,8 +90,22 @@ const CommitsAuthorsGraph = (props: CommitsAuthorsProps) => {
             plot_bgcolor: '#fafafa',
             paper_bgcolor: '#fafafa',
           }}
+          onClick={(event) => {
+            setPoint(event.points[0]);
+            setOpen(true);
+          }}
         />
       </div>
+      <Popup open={open} onClose={closeModal}>
+        <CommitsAuthorsModal
+          onCloseModal={closeModal}
+          point={point}
+          commits={props.commits}
+          users={props.users}
+          start={props.start}
+          end={props.end}
+        />
+      </Popup>
     </>
   );
 };

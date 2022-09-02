@@ -1,6 +1,9 @@
 import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
+import Popup from 'reactjs-popup';
 import styles from '../../styles/Home.module.css';
+import PullRequestsLifetimeGraph from '../Issues/PullRequestsLifetimeGraph';
+import PullRequestsModal from '../Modal/Issues/PullRequestsModal';
 
 const Plot = dynamic(() => import('react-plotly.js'), {
   ssr: false,
@@ -17,6 +20,9 @@ const PullRequestsGraph = (props: PullRequestsProps) => {
   const [graphLabel, setGraphLabel] = useState([]);
   const [lifetimeValues, setlifetimeValues] = useState([]);
   const [pullRequestsInfo, setPullRequestsInfo] = useState([]);
+  const [point, setPoint] = useState({});
+  const [open, setOpen] = useState(false);
+  const closeModal = () => setOpen(false);
 
   const parsePullRequests = (response, start = undefined, end = undefined) => {
     if (start == '') start = undefined;
@@ -34,15 +40,13 @@ const PullRequestsGraph = (props: PullRequestsProps) => {
         (elem.closed >= start && !end) ||
         (elem.closed <= end && !start)
       ) {
-        if (elem.was_merged == true) {
-          lifetimeValues.push(elem.active_days);
+        if (elem.active_days != null) lifetimeValues.push(elem.active_days);
 
-          if (elem.reviewers.length > 0 && elem.comments > 0)
-            countReviewersAndComments.push(elem.number);
-          else if (elem.reviewers.length > 0 || elem.comments > 0)
-            countReviewersOrComments.push(elem.number);
-          else countNoReviewersNoComments.push(elem.number);
-        }
+        if (elem.reviewers.length > 0 && elem.comments > 0)
+          countReviewersAndComments.push(elem.number);
+        else if (elem.reviewers.length > 0 || elem.comments > 0)
+          countReviewersOrComments.push(elem.number);
+        else countNoReviewersNoComments.push(elem.number);
       }
     });
 
@@ -95,42 +99,27 @@ const PullRequestsGraph = (props: PullRequestsProps) => {
             paper_bgcolor: '#fafafa',
             width: 655,
           }}
-        />
-      </div>
-      <div className={styles.plot}>
-        <Plot
-          data={[
-            {
-              type: 'violin',
-              y: lifetimeValues,
-              points: false,
-              box: {
-                visible: true,
-              },
-              boxpoints: false,
-              line: {
-                color: 'black',
-              },
-              fillcolor: '#8dd3c7',
-              opacity: 0.6,
-              meanline: {
-                visible: true,
-              },
-              x0: 'Qtd. de PRs',
-            },
-          ]}
-          layout={{
-            title: 'Tempo de Vida - PR',
-            yaxis: {
-              zeroline: false,
-              title: 'Dias',
-            },
-            plot_bgcolor: '#fafafa',
-            paper_bgcolor: '#fafafa',
-            width: 655,
+          onClick={(event) => {
+            setPoint(event.points[0]);
+            setOpen(true);
           }}
         />
       </div>
+      <Popup open={open} onClose={closeModal}>
+        <PullRequestsModal
+          onCloseModal={closeModal}
+          point={point}
+          pullRequests={props.pullRequests}
+          start={props.start}
+          end={props.end}
+        />
+      </Popup>
+      <PullRequestsLifetimeGraph
+        lifetimeValues={lifetimeValues}
+        pullRequests={props.pullRequests}
+        start={props.start}
+        end={props.end}
+      />
     </>
   );
 };
