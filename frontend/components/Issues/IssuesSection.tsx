@@ -11,7 +11,6 @@ interface IssuesSectionProps {
   issues: any[];
   pullRequests: any[];
   commits: any[];
-  metrics: any[];
   users: any;
 }
 
@@ -34,10 +33,10 @@ const IssuesSection = (props: IssuesSectionProps) => {
       resCommits.data['commits'][0].date,
       resCommits.data['commits'][resCommits.data['commits'].length - 1].date,
     ];
-    let [begin, end] = ['', ''];
 
-    begin = firstIssueDate <= firsCommitDate ? firstIssueDate : firsCommitDate;
-    end = lastIssueDate >= lastCommitDate ? lastIssueDate : lastCommitDate;
+    let begin =
+      firstIssueDate <= firsCommitDate ? firstIssueDate : firsCommitDate;
+    let end = lastIssueDate >= lastCommitDate ? lastIssueDate : lastCommitDate;
 
     setStart(parseDate(begin));
     setEnd(parseDate(end));
@@ -59,7 +58,6 @@ const IssuesSection = (props: IssuesSectionProps) => {
           <label>Data Inicial</label>
           <input
             type="date"
-            placeholder="Data Inicial - Formato: YYYY-MM-DD"
             className={styles.inputData}
             value={start}
             onChange={(ev) => {
@@ -71,7 +69,6 @@ const IssuesSection = (props: IssuesSectionProps) => {
           <label>Data Final</label>
           <input
             type="date"
-            placeholder="Data Final - Formato: YYYY-MM-DD"
             className={styles.inputData}
             value={end}
             onChange={(ev) => {
@@ -115,7 +112,7 @@ const IssuesSection = (props: IssuesSectionProps) => {
         <TypeContributionGraph
           issues={props.issues}
           pullRequests={props.pullRequests}
-          metrics={props.metrics}
+          commits={props.commits}
           users={props.users}
           start={parsedStart}
           end={parsedEnd}
@@ -124,8 +121,8 @@ const IssuesSection = (props: IssuesSectionProps) => {
       <hr />
       <CommitsSection
         commits={props.commits}
-        metrics={props.metrics}
         users={props.users}
+        issues={props.issues}
         start={parsedStart}
         end={parsedEnd}
       />

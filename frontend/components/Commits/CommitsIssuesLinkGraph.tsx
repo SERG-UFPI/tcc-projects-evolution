@@ -1,6 +1,8 @@
 import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
 import styles from '../../styles/Home.module.css';
+import Popup from 'reactjs-popup';
+import CommitsIssuesLinkModal from '../Modal/Commits/CommitsIssuesLinkModal';
 
 const Plot = dynamic(() => import('react-plotly.js'), {
   ssr: false,
@@ -10,6 +12,7 @@ const Plot = dynamic(() => import('react-plotly.js'), {
 interface CommitsIssuesLinkProps {
   commits: any[];
   users: any;
+  issues: any[];
   start: string | undefined;
   end: string | undefined;
 }
@@ -18,6 +21,9 @@ const CommitsIssuesLinkGraph = (props: CommitsIssuesLinkProps) => {
   const [authors, setAuthors] = useState([]);
   const [commitsIssuesLink, setCommitsIssuesLink] = useState([]);
   const [commitsNonIssuesLink, setNonCommitsWithLink] = useState([]);
+  const [point, setPoint] = useState({});
+  const [open, setOpen] = useState(false);
+  const closeModal = () => setOpen(false);
 
   const commitsByMessage = (
     response,
@@ -103,8 +109,23 @@ const CommitsIssuesLinkGraph = (props: CommitsIssuesLinkProps) => {
             paper_bgcolor: '#fafafa',
             width: 655,
           }}
+          onClick={(event) => {
+            setPoint(event.points[0]);
+            setOpen(true);
+          }}
         />
       </div>
+      <Popup open={open} onClose={closeModal}>
+        <CommitsIssuesLinkModal
+          onCloseModal={closeModal}
+          point={point}
+          commits={props.commits}
+          users={props.users}
+          issues={props.issues}
+          start={props.start}
+          end={props.end}
+        />
+      </Popup>
     </>
   );
 };

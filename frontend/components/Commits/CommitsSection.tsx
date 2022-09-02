@@ -6,8 +6,8 @@ import CommitsLinesGraph from './CommitsLinesGraph';
 
 interface CommitsSectionProps {
   commits: any[];
-  metrics: any[];
   users: any;
+  issues: any[];
   start: string | undefined;
   end: string | undefined;
 }
@@ -18,19 +18,21 @@ const CommitsSection = (props: CommitsSectionProps) => {
       <h2 style={{ textAlign: 'center' }}>Commits</h2>
       <div className={styles.commitsContainer}>
         <CommitsAuthorsGraph
-          commits={props.metrics}
+          commits={props.commits}
           users={props.users}
           start={props.start}
           end={props.end}
         />
         <CommitsLinesGraph
           commits={props.commits}
+          users={props.users}
           start={props.start}
           end={props.end}
         />
         <CommitsIssuesLinkGraph
           commits={props.commits}
           users={props.users}
+          issues={props.issues}
           start={props.start}
           end={props.end}
         />

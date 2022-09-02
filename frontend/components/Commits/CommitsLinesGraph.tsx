@@ -1,6 +1,8 @@
 import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
 import styles from '../../styles/Home.module.css';
+import Popup from 'reactjs-popup';
+import CommitsLinesModal from '../Modal/Commits/CommitsLinesModal';
 
 const Plot = dynamic(() => import('react-plotly.js'), {
   ssr: false,
@@ -9,6 +11,7 @@ const Plot = dynamic(() => import('react-plotly.js'), {
 
 interface CommitsLinesProps {
   commits: any[];
+  users: any;
   start: string | undefined;
   end: string | undefined;
 }
@@ -17,6 +20,9 @@ const CommitsLinesGraph = (props: CommitsLinesProps) => {
   const [addedFiles, setAddedFiles] = useState([]);
   const [removedFiles, setRemovedFiles] = useState([]);
   const [dateCommits, setDateCommits] = useState([]);
+  const [point, setPoint] = useState({});
+  const [open, setOpen] = useState(false);
+  const closeModal = () => setOpen(false);
 
   const parseDate = (date) => {
     return date.slice(0, 4) + '-' + date.slice(4, 6) + '-' + date.slice(6, 8);
@@ -25,8 +31,8 @@ const CommitsLinesGraph = (props: CommitsLinesProps) => {
   const linesAddedRemoved = (response, start = undefined, end = undefined) => {
     if (start == '') start = undefined;
     if (end == '') end = undefined;
-
-    const [addedList, removedList, dates] = [[], [], []]
+    
+    const [addedList, removedList, dates] = [[], [], []];
     response.data['commits'].forEach((elem) => {
       if (
         (!start && !end) ||
@@ -34,16 +40,16 @@ const CommitsLinesGraph = (props: CommitsLinesProps) => {
         (elem.date >= start && !end) ||
         (elem.date <= end && !start)
       ) {
-        let commitDate = parseDate(elem.date)
-        let indexRepeatedDate = dates.indexOf(commitDate)
+        let commitDate = parseDate(elem.date);
+        let indexRepeatedDate = dates.indexOf(commitDate);
 
-        if(indexRepeatedDate == -1) {
-          dates.push(commitDate)
-          addedList.push(elem.lines_added)
-          removedList.push(-elem.lines_removed)
+        if (indexRepeatedDate == -1) {
+          dates.push(commitDate);
+          addedList.push(elem.lines_added);
+          removedList.push(-elem.lines_removed);
         } else {
-          addedList[indexRepeatedDate] += elem.lines_added
-          removedList[indexRepeatedDate] -= elem.lines_removed
+          addedList[indexRepeatedDate] += elem.lines_added;
+          removedList[indexRepeatedDate] -= elem.lines_removed;
         }
       }
     });
@@ -52,7 +58,7 @@ const CommitsLinesGraph = (props: CommitsLinesProps) => {
     setAddedFiles([...addedList]);
     setRemovedFiles([...removedList]);
   };
-
+  
   useEffect(() => {
     linesAddedRemoved(props.commits);
   }, []);
@@ -98,8 +104,22 @@ const CommitsLinesGraph = (props: CommitsLinesProps) => {
               title: 'Linhas',
             },
           }}
+          onClick={(event) => {
+            setPoint(event.points[0]);
+            setOpen(true);
+          }}
         />
       </div>
+      <Popup open={open} onClose={closeModal}>
+        <CommitsLinesModal
+          onCloseModal={closeModal}
+          point={point}
+          commits={props.commits}
+          users={props.users}
+          start={props.start}
+          end={props.end}
+        />
+      </Popup>
     </>
   );
 };

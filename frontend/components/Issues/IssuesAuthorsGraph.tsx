@@ -1,6 +1,8 @@
 import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
 import styles from '../../styles/Home.module.css';
+import Popup from 'reactjs-popup';
+import IssuesAuthorsModal from '../Modal/Issues/IssuesAuthorsModal';
 
 const Plot = dynamic(() => import('react-plotly.js'), {
   ssr: false,
@@ -16,6 +18,9 @@ interface IssuesAuthorsProps {
 const IssuesAuthorsGraph = (props: IssuesAuthorsProps) => {
   const [authors, setAuthors] = useState([]);
   const [authorsTotalIssues, setAuthorsTotalIssues] = useState([]);
+  const [point, setPoint] = useState({});
+  const [open, setOpen] = useState(false);
+  const closeModal = () => setOpen(false);
 
   const issuesByAuthors = (response, start = undefined, end = undefined) => {
     if (start == '') start = undefined;
@@ -78,8 +83,21 @@ const IssuesAuthorsGraph = (props: IssuesAuthorsProps) => {
             plot_bgcolor: '#fafafa',
             paper_bgcolor: '#fafafa',
           }}
+          onClick={(event) => {
+            setPoint(event.points[0]);
+            setOpen(true);
+          }}
         />
       </div>
+      <Popup open={open} onClose={closeModal}>
+        <IssuesAuthorsModal
+          onCloseModal={closeModal}
+          point={point}
+          issues={props.issues}
+          start={props.start}
+          end={props.end}
+        />
+      </Popup>
     </>
   );
 };
