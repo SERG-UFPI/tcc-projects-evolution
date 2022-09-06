@@ -12,6 +12,8 @@ const Plot = dynamic(() => import('react-plotly.js'), {
 interface CommitsAuthorsProps {
   commits: any[];
   users: any;
+  branches: any[];
+  branch: string | undefined;
   start: string | undefined;
   end: string | undefined;
 }
@@ -25,19 +27,32 @@ const CommitsAuthorsGraph = (props: CommitsAuthorsProps) => {
   const commitsByAuthors = (
     response,
     githubUsers,
+    resBranches,
+    branch,
     start = undefined,
     end = undefined
   ) => {
-    if (start == '') start = undefined;
-    if (end == '') end = undefined;
-
     const [totalCommits, authorsDict, users] = [
       [],
       {},
       Object.keys(githubUsers.data['users']),
     ];
 
-    response.data['commits'].forEach((elem) => {
+    const principalBranch = Object.keys(resBranches.data['branches']).includes(
+      'main'
+    )
+      ? 'main'
+      : 'master';
+
+    let result = branch
+      ? response.data['commits'].filter((el) =>
+          resBranches.data['branches'][branch].includes(el.hash)
+        )
+      : response.data['commits'].filter((el) =>
+          resBranches.data['branches'][principalBranch].includes(el.hash)
+        );
+
+    result.forEach((elem) => {
       if (
         (!start && !end) ||
         (elem.date >= start && elem.date <= end) ||
@@ -61,12 +76,19 @@ const CommitsAuthorsGraph = (props: CommitsAuthorsProps) => {
   };
 
   useEffect(() => {
-    commitsByAuthors(props.commits, props.users);
+    commitsByAuthors(props.commits, props.users, props.branches, props.branch);
   }, []);
 
   useEffect(() => {
-    commitsByAuthors(props.commits, props.users, props.start, props.end);
-  }, [props.start, props.end]);
+    commitsByAuthors(
+      props.commits,
+      props.users,
+      props.branches,
+      props.branch,
+      props.start,
+      props.end
+    );
+  }, [props.start, props.end, props.branch]);
 
   return (
     <>

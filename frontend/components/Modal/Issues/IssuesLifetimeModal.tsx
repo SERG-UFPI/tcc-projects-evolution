@@ -1,6 +1,6 @@
 import styles from '../../../styles/Modal.module.css';
 import stylesTable from '../../../styles/Table.module.css';
-import MyTable from  '../../Table/MyTable';
+import MyTable from '../../Table/MyTable';
 
 interface ModalProps {
   onCloseModal: Function;
@@ -26,10 +26,8 @@ const IssuesLifetimeModal = (props: ModalProps) => {
   };
 
   const parseIssues = (response, start = undefined, end = undefined) => {
-    if (start == '') start = undefined;
-    if (end == '') end = undefined;
-
     const result = [];
+
     response.data['issues'].forEach((elem) => {
       if (
         (!start && !end) ||
@@ -56,11 +54,7 @@ const IssuesLifetimeModal = (props: ModalProps) => {
   };
 
   const columns = [
-    {
-      label: 'Número',
-      accessor: 'number',
-      sortable: true,
-    },
+    { label: 'Número', accessor: 'number', sortable: true },
     { label: 'Título', accessor: 'title', sortable: true },
     { label: 'Estado', accessor: 'state', sortable: true },
     { label: 'Data_Criação', accessor: 'created', sortable: true },

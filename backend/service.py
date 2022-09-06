@@ -124,6 +124,34 @@ def get_commits(owner, repo):
     return json.dumps(result)
 
 
+def branches_commits(owner, repo):
+    g = github.Github()
+    repo_info = g.get_repo(f"{owner}/{repo}")
+
+    branches_dict = {}
+    for i in repo_info.get_branches():
+        if 'bot' not in str(i):
+            branches_dict[str(i)[13:-2]] = []
+
+    last_commit_hash = ''
+    for branch, commits_list in branches_dict.items():
+        for commit in commit_repo(owner, repo, [branch]):
+            message = commit['data']['message']
+            commit_hash = commit['data']['commit']
+            identifier = commit['data']['Author']
+            commit_hash = commit['data']['commit']
+            author = commit['data']['Author'].split(' <')[0]
+
+            if (("Merge pull request" not in message and "Merge branch" not in message) and
+                    ("Merge remote" not in message and "gavelino" not in identifier) and
+                    (not '[bot]' in author and last_commit_hash != commit_hash)):
+                commits_list.append(commit_hash)
+                last_commit_hash = commit_hash
+
+    result = {'branches': branches_dict}
+    return json.dumps(result)
+
+
 def user_commits(owner, repo):
     response = requests.get(
         f"https://api.github.com/repos/{owner}/{repo}/commits")
@@ -268,9 +296,6 @@ def get_pull_requests(owner, repo):
     begin = datetime_to_utc(datetime.strptime(date_dict['begin'], '%Y-%m-%d'))
     end = datetime_to_utc(datetime.strptime(
         date_dict['end'], '%Y-%m-%d') + timedelta(days=1))
-    """ begin = datetime_to_utc(datetime.strptime('2021-06-21', '%Y-%m-%d'))
-    end = datetime_to_utc(datetime.strptime(
-        '2021-06-25', '%Y-%m-%d') + timedelta(days=1)) """
 
     default_branch = ''
     for item in repo.fetch_items(category='pull_request', from_date=begin, to_date=end):

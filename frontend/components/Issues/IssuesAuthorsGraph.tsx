@@ -1,7 +1,7 @@
 import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
-import styles from '../../styles/Home.module.css';
 import Popup from 'reactjs-popup';
+import styles from '../../styles/Home.module.css';
 import IssuesAuthorsModal from '../Modal/Issues/IssuesAuthorsModal';
 
 const Plot = dynamic(() => import('react-plotly.js'), {
@@ -23,9 +23,6 @@ const IssuesAuthorsGraph = (props: IssuesAuthorsProps) => {
   const closeModal = () => setOpen(false);
 
   const issuesByAuthors = (response, start = undefined, end = undefined) => {
-    if (start == '') start = undefined;
-    if (end == '') end = undefined;
-
     const [totalAuthors, authorsTotalIssuesList] = [[], []];
 
     response.data['issues'].forEach((elem) => {

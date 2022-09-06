@@ -1,6 +1,6 @@
 import styles from '../../../styles/Modal.module.css';
 import stylesTable from '../../../styles/Table.module.css';
-import MyTable from  '../../Table/MyTable';
+import MyTable from '../../Table/MyTable';
 
 interface ModalProps {
   onCloseModal: Function;
@@ -26,10 +26,8 @@ const PullRequestsLifetimeModal = (props: ModalProps) => {
   };
 
   const parsePr = (response, start = undefined, end = undefined) => {
-    if (start == '') start = undefined;
-    if (end == '') end = undefined;
-
     const result = [];
+
     response.data['pr'].forEach((elem) => {
       if (
         (!start && !end) ||
@@ -57,11 +55,7 @@ const PullRequestsLifetimeModal = (props: ModalProps) => {
   };
 
   const columns = [
-    {
-      label: 'Número',
-      accessor: 'number',
-      sortable: true,
-    },
+    { label: 'Número', accessor: 'number', sortable: true },
     { label: 'Título', accessor: 'title', sortable: true },
     { label: 'Data_Criação', accessor: 'created', sortable: true },
     { label: 'Data_Fechamento', accessor: 'closed', sortable: true },
@@ -71,7 +65,10 @@ const PullRequestsLifetimeModal = (props: ModalProps) => {
   ];
 
   return (
-    <div className={styles.modalBackground} onClick={() => props.onCloseModal()} >
+    <div
+      className={styles.modalBackground}
+      onClick={() => props.onCloseModal()}
+    >
       <div className={styles.modalBox} onClick={(e) => e.stopPropagation()}>
         <div className={stylesTable.table_container}>
           <h1>Tempo de vida dos Pull Requests</h1>

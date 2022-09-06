@@ -1,7 +1,7 @@
 import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
-import styles from '../../styles/Home.module.css';
 import Popup from 'reactjs-popup';
+import styles from '../../styles/Home.module.css';
 import TypeContributionModal from '../Modal/Issues/TypeContributionModal';
 
 const Plot = dynamic(() => import('react-plotly.js'), {
@@ -14,6 +14,8 @@ interface TypeContributionProps {
   pullRequests: any[];
   commits: any[];
   users: any;
+  branches: any[];
+  branch: string | undefined;
   start: string | undefined;
   end: string | undefined;
 }
@@ -47,8 +49,7 @@ const TypeContributionGraph = (props: TypeContributionProps) => {
   };
 
   const makeObjectsWithSameField = (arr) => {
-    let maxLength = 0;
-    let maxIndex = 0;
+    let [maxLength, maxIndex] = [0, 0];
 
     arr.forEach((elem) => {
       if (Object.keys(elem).length > maxLength) {
@@ -93,12 +94,11 @@ const TypeContributionGraph = (props: TypeContributionProps) => {
     resPr,
     resCommit,
     usersData,
+    resBranches,
+    branch,
     start = undefined,
     end = undefined
   ) => {
-    if (start == '') start = undefined;
-    if (end == '') end = undefined;
-
     const [resultIssues, countIssuesComments] = [[], []];
     let [issuesAuthors, issuesCommentsAuthors] = [{}, {}];
     resIssues.data['issues'].forEach((elem) => {
@@ -182,7 +182,22 @@ const TypeContributionGraph = (props: TypeContributionProps) => {
     ];
 
     let authorsDict = {};
-    resCommit.data['commits'].forEach((elem) => {
+
+    const principalBranch = Object.keys(resBranches.data['branches']).includes(
+      'main'
+    )
+      ? 'main'
+      : 'master';
+
+    let result = branch
+      ? resCommit.data['commits'].filter((el) =>
+          resBranches.data['branches'][branch].includes(el.hash)
+        )
+      : resCommit.data['commits'].filter((el) =>
+          resBranches.data['branches'][principalBranch].includes(el.hash)
+        );
+
+    result.forEach((elem) => {
       if (
         (!start && !end) ||
         (elem.date >= start && elem.date <= end) ||
@@ -217,7 +232,9 @@ const TypeContributionGraph = (props: TypeContributionProps) => {
       props.issues,
       props.pullRequests,
       props.commits,
-      props.users
+      props.users,
+      props.branches,
+      props.branch
     );
   }, []);
 
@@ -227,10 +244,12 @@ const TypeContributionGraph = (props: TypeContributionProps) => {
       props.pullRequests,
       props.commits,
       props.users,
+      props.branches,
+      props.branch,
       props.start,
       props.end
     );
-  }, [props.start, props.end]);
+  }, [props.start, props.end, props.branch]);
 
   return (
     <>

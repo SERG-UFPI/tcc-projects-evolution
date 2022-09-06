@@ -29,9 +29,6 @@ const IssuesDatesModal = (props: ModalProps) => {
   };
 
   const parseIssues = (response, start = undefined, end = undefined) => {
-    if (start == '') start = undefined;
-    if (end == '') end = undefined;
-
     const [result, date, issueType] = [
       [],
       props.point['label'].replace(/[/-]/g, ''),
@@ -69,11 +66,7 @@ const IssuesDatesModal = (props: ModalProps) => {
   };
 
   const columns = [
-    {
-      label: 'Número',
-      accessor: 'number',
-      sortable: true,
-    },
+    { label: 'Número', accessor: 'number', sortable: true },
     { label: 'Título', accessor: 'title', sortable: true },
     { label: 'Criador', accessor: 'creator', sortable: true },
     { label: 'Encarregado(s)', accessor: 'assignees', sortable: true },

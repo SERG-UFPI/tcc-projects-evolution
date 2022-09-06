@@ -26,11 +26,8 @@ const PullRequestsModal = (props: ModalProps) => {
   };
 
   const parsePr = (response, start = undefined, end = undefined) => {
-    if (start == '') start = undefined;
-    if (end == '') end = undefined;
+    const [result, selectLabel] = [[], props.point['label']];
 
-    const result = [];
-    const selectLabel = props.point['label'];
     response.data['pr'].forEach((elem) => {
       if (
         (!start && !end) ||

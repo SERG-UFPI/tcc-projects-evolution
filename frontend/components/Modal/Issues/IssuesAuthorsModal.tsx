@@ -58,11 +58,7 @@ const IssuesAuthorsModal = (props: ModalProps) => {
   };
 
   const columns = [
-    {
-      label: 'Número',
-      accessor: 'number',
-      sortable: true,
-    },
+    { label: 'Número', accessor: 'number', sortable: true },
     { label: 'Título', accessor: 'title', sortable: true },
     { label: 'Encarregado(s)', accessor: 'assignees', sortable: true },
     { label: 'Estado', accessor: 'state', sortable: true },
