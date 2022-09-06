@@ -2,8 +2,8 @@ import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
-import styles from '../../styles/Home.module.css';
 import Popup from 'reactjs-popup';
+import styles from '../../styles/Home.module.css';
 import CommitsAuthorsLinesModal from '../Modal/Commits/CommitsAuthorsLinesModal';
 
 const Plot = dynamic(() => import('react-plotly.js'), {
@@ -14,6 +14,8 @@ const Plot = dynamic(() => import('react-plotly.js'), {
 interface CommitsAuthorsLinesProps {
   commits: any[];
   users: any;
+  branches: any[];
+  branch: string | undefined;
   start: string | undefined;
   end: string | undefined;
 }
@@ -33,14 +35,28 @@ const CommitsAuthorsLinesGraph = (props: CommitsAuthorsLinesProps) => {
   const commitsByMessage = (
     response,
     githubUsers,
+    resBranches,
+    branch,
     start = undefined,
     end = undefined
   ) => {
-    if (start == '') start = undefined;
-    if (end == '') end = undefined;
-
     const [authorsDict, users] = [{}, Object.keys(githubUsers.data['users'])];
-    response.data['commits'].forEach((elem) => {
+
+    const principalBranch = Object.keys(resBranches.data['branches']).includes(
+      'main'
+    )
+      ? 'main'
+      : 'master';
+
+    let result = branch
+      ? response.data['commits'].filter((el) =>
+          resBranches.data['branches'][branch].includes(el.hash)
+        )
+      : response.data['commits'].filter((el) =>
+          resBranches.data['branches'][principalBranch].includes(el.hash)
+        );
+
+    result.forEach((elem) => {
       if (
         (!start && !end) ||
         (elem.date >= start && elem.date <= end) ||
@@ -84,12 +100,19 @@ const CommitsAuthorsLinesGraph = (props: CommitsAuthorsLinesProps) => {
   };
 
   useEffect(() => {
-    commitsByMessage(props.commits, props.users);
+    commitsByMessage(props.commits, props.users, props.branches, props.branch);
   }, []);
 
   useEffect(() => {
-    commitsByMessage(props.commits, props.users, props.start, props.end);
-  }, [props.start, props.end]);
+    commitsByMessage(
+      props.commits,
+      props.users,
+      props.branches,
+      props.branch,
+      props.start,
+      props.end
+    );
+  }, [props.start, props.end, props.branch]);
 
   return (
     <>
@@ -147,6 +170,7 @@ const CommitsAuthorsLinesGraph = (props: CommitsAuthorsLinesProps) => {
             onClick={(event) => {
               setPoint(event.points[0]);
               setOpen(true);
+              //console.log(event.points[0])
             }}
           />
           <button

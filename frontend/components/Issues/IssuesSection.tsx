@@ -8,9 +8,11 @@ import PullRequestsGraph from './PullRequestsGraph';
 import TypeContributionGraph from './TypeContributionGraph';
 
 interface IssuesSectionProps {
+  repository: any[];
   issues: any[];
   pullRequests: any[];
   commits: any[];
+  branches: any[];
   users: any;
 }
 
@@ -19,6 +21,8 @@ const IssuesSection = (props: IssuesSectionProps) => {
   const [parsedStart, setParsedStart] = useState('');
   const [end, setEnd] = useState('');
   const [parsedEnd, setParsedEnd] = useState('');
+  const [branchesParsed, setBranchesParsed] = useState([]);
+  const [branch, setBranch] = useState('');
 
   const parseDate = (date) => {
     return date.slice(0, 4) + '-' + date.slice(4, 6) + '-' + date.slice(6, 8);
@@ -44,6 +48,7 @@ const IssuesSection = (props: IssuesSectionProps) => {
 
   useEffect(() => {
     captureStartEndDate(props.issues, props.commits);
+    getAllBranches(props.branches['data']['branches']);
   }, []);
 
   useEffect(() => {
@@ -51,8 +56,25 @@ const IssuesSection = (props: IssuesSectionProps) => {
     setParsedEnd(end.replace(/-/g, ''));
   }, [start, end]);
 
+  const getAllBranches = (branches) => {
+    const [result, aux] = [[], []];
+
+    Object.keys(branches).forEach((branch) => {
+      branch == 'main' || branch == 'master'
+        ? result.push({ value: branch, text: branch })
+        : aux.push({ value: branch, text: branch });
+    });
+
+    setBranchesParsed(result.concat(aux));
+  };
+
+  const handleSelector = (event) => {
+    setBranch(event.target.value);
+  };
+
   return (
     <div className={styles.pageComponents}>
+      <h2>{`~ Repositório: ${props.repository[0]}/${props.repository[1]} ~`}</h2>
       <div className={styles.inputIssues}>
         <div className={styles.labelInputIssues}>
           <label>Data Inicial</label>
@@ -85,6 +107,17 @@ const IssuesSection = (props: IssuesSectionProps) => {
         >
           {'Limpar'}
         </button>
+        <div className={styles.division}></div>
+        <div className={styles.labelSelectIssues}>
+          <label>Branches:</label>
+          <select onChange={handleSelector}>
+            {branchesParsed.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.text}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
       <h2 style={{ textAlign: 'center' }}>Issues</h2>
@@ -114,6 +147,8 @@ const IssuesSection = (props: IssuesSectionProps) => {
           pullRequests={props.pullRequests}
           commits={props.commits}
           users={props.users}
+          branches={props.branches}
+          branch={branch}
           start={parsedStart}
           end={parsedEnd}
         />
@@ -123,6 +158,8 @@ const IssuesSection = (props: IssuesSectionProps) => {
         commits={props.commits}
         users={props.users}
         issues={props.issues}
+        branches={props.branches}
+        branch={branch}
         start={parsedStart}
         end={parsedEnd}
       />

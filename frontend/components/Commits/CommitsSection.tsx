@@ -8,6 +8,8 @@ interface CommitsSectionProps {
   commits: any[];
   users: any;
   issues: any[];
+  branches: any[];
+  branch: string | undefined;
   start: string | undefined;
   end: string | undefined;
 }
@@ -20,12 +22,16 @@ const CommitsSection = (props: CommitsSectionProps) => {
         <CommitsAuthorsGraph
           commits={props.commits}
           users={props.users}
+          branches={props.branches}
+          branch={props.branch}
           start={props.start}
           end={props.end}
         />
         <CommitsLinesGraph
           commits={props.commits}
           users={props.users}
+          branches={props.branches}
+          branch={props.branch}
           start={props.start}
           end={props.end}
         />
@@ -33,12 +39,16 @@ const CommitsSection = (props: CommitsSectionProps) => {
           commits={props.commits}
           users={props.users}
           issues={props.issues}
+          branches={props.branches}
+          branch={props.branch}
           start={props.start}
           end={props.end}
         />
         <CommitsAuthorsLinesGraph
           commits={props.commits}
           users={props.users}
+          branches={props.branches}
+          branch={props.branch}
           start={props.start}
           end={props.end}
         />

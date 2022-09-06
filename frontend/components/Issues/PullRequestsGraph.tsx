@@ -25,13 +25,12 @@ const PullRequestsGraph = (props: PullRequestsProps) => {
   const closeModal = () => setOpen(false);
 
   const parsePullRequests = (response, start = undefined, end = undefined) => {
-    if (start == '') start = undefined;
-    if (end == '') end = undefined;
-
-    const countReviewersAndComments = [];
-    const countReviewersOrComments = [];
-    const countNoReviewersNoComments = [];
-    const lifetimeValues = [];
+    const [
+      countReviewersAndComments,
+      countReviewersOrComments,
+      countNoReviewersNoComments,
+      lifetimeValues,
+    ] = [[], [], [], []];
 
     response.data['pr'].forEach((elem) => {
       if (

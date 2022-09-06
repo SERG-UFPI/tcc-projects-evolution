@@ -1,7 +1,7 @@
 import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
-import styles from '../../styles/Home.module.css';
 import Popup from 'reactjs-popup';
+import styles from '../../styles/Home.module.css';
 import CommitsLinesModal from '../Modal/Commits/CommitsLinesModal';
 
 const Plot = dynamic(() => import('react-plotly.js'), {
@@ -12,6 +12,8 @@ const Plot = dynamic(() => import('react-plotly.js'), {
 interface CommitsLinesProps {
   commits: any[];
   users: any;
+  branches: any[];
+  branch: string | undefined;
   start: string | undefined;
   end: string | undefined;
 }
@@ -28,12 +30,30 @@ const CommitsLinesGraph = (props: CommitsLinesProps) => {
     return date.slice(0, 4) + '-' + date.slice(4, 6) + '-' + date.slice(6, 8);
   };
 
-  const linesAddedRemoved = (response, start = undefined, end = undefined) => {
-    if (start == '') start = undefined;
-    if (end == '') end = undefined;
-    
+  const linesAddedRemoved = (
+    response,
+    resBranches,
+    branch,
+    start = undefined,
+    end = undefined
+  ) => {
     const [addedList, removedList, dates] = [[], [], []];
-    response.data['commits'].forEach((elem) => {
+
+    const principalBranch = Object.keys(resBranches.data['branches']).includes(
+      'main'
+    )
+      ? 'main'
+      : 'master';
+
+    let result = branch
+      ? response.data['commits'].filter((el) =>
+          resBranches.data['branches'][branch].includes(el.hash)
+        )
+      : response.data['commits'].filter((el) =>
+          resBranches.data['branches'][principalBranch].includes(el.hash)
+        );
+
+    result.forEach((elem) => {
       if (
         (!start && !end) ||
         (elem.date >= start && elem.date <= end) ||
@@ -58,14 +78,20 @@ const CommitsLinesGraph = (props: CommitsLinesProps) => {
     setAddedFiles([...addedList]);
     setRemovedFiles([...removedList]);
   };
-  
+
   useEffect(() => {
-    linesAddedRemoved(props.commits);
+    linesAddedRemoved(props.commits, props.branches, props.branch);
   }, []);
 
   useEffect(() => {
-    linesAddedRemoved(props.commits, props.start, props.end);
-  }, [props.start, props.end, props.commits]);
+    linesAddedRemoved(
+      props.commits,
+      props.branches,
+      props.branch,
+      props.start,
+      props.end
+    );
+  }, [props.start, props.end, props.branch]);
 
   return (
     <>

@@ -58,7 +58,6 @@ const PullRequestsGraph = (props: PullRequestsProps) => {
           onClick={(event) => {
             setPoint(event.points[0]);
             setOpen(true);
-            // console.log(event.points[0]);
           }}
         />
         <Popup open={open} onClose={closeModal}>

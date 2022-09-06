@@ -1,7 +1,7 @@
 import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
-import styles from '../../styles/Home.module.css';
 import Popup from 'reactjs-popup';
+import styles from '../../styles/Home.module.css';
 import IssuesDatesModal from '../Modal/Issues/IssuesDatesModal';
 
 const Plot = dynamic(() => import('react-plotly.js'), {

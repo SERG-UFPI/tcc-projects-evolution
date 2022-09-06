@@ -9,6 +9,8 @@ export default function Home() {
   const [issues, setIssues] = useState<any>([]);
   const [pullRequests, setPullRequests] = useState<any>([]);
   const [commits, setCommits] = useState<any>([]);
+  const [branches, setBranches] = useState<any>([]);
+  const [repository, setRepository] = useState<any>([]);
   const [users, setUsers] = useState<any>([]);
   const [repoUrl, setRepoUrl] = useState('');
   const [isDataReady, setIsDataReady] = useState(false);
@@ -27,15 +29,20 @@ export default function Home() {
 
     try {
       const responses = await Promise.all([
-        axios.get(`https://20.163.20.169.nip.io/info/pr/${owner}/${repo}`),
         axios.get(`https://20.163.20.169.nip.io/info/users/${owner}/${repo}`),
         axios.get(`https://20.163.20.169.nip.io/info/issues/${owner}/${repo}`),
         axios.get(`https://20.163.20.169.nip.io/info/commits/${owner}/${repo}`),
+        axios.get(
+          `https://20.163.20.169.nip.io/info/branches/${owner}/${repo}`
+        ),
+        axios.get(`https://20.163.20.169.nip.io/info/pr/${owner}/${repo}`),
       ]);
-      setPullRequests(responses[0]);
-      setUsers(responses[1]);
-      setIssues(responses[2]);
-      setCommits(responses[3]);
+      setUsers(responses[0]);
+      setIssues(responses[1]);
+      setCommits(responses[2]);
+      setBranches(responses[3]);
+      setPullRequests(responses[4]);
+      setRepository([owner, repo]);
 
       setIsDataReady(true);
       setIsLoading(false);
@@ -103,9 +110,11 @@ export default function Home() {
       ) : (
         <IssuesSection
           {...{
+            repository,
             issues,
             pullRequests,
             commits,
+            branches,
             users,
           }}
         />

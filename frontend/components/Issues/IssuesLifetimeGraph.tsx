@@ -1,8 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
-import styles from '../../styles/Home.module.css';
 import Popup from 'reactjs-popup';
+import styles from '../../styles/Home.module.css';
 import IssuesLifetimeModal from '../Modal/Issues/IssuesLifetimeModal';
 
 const Plot = dynamic(() => import('react-plotly.js'), {
@@ -23,9 +23,6 @@ const IssuesLifetimeGraph = (props: IssuesLifetimeProps) => {
   const closeModal = () => setOpen(false);
 
   const issuesByLifetime = (response, start = undefined, end = undefined) => {
-    if (start == '') start = undefined;
-    if (end == '') end = undefined;
-
     const lifetime = [];
     response.data['issues'].forEach((elem) => {
       if (
