@@ -114,7 +114,8 @@ def get_commits(owner, repo):
                     'lines_added': added,
                     'lines_removed': removed,
                     'files_changed': commit['data']['files'],
-                    'docs': True if len(count_files) > 0 else False
+                    'docs': True if len(count_files) > 0 else False,
+                    'url': f"https://github.com/{owner}/{repo}/commit/{commit_hash}"
                 }
 
                 last_commit_hash = commit_hash

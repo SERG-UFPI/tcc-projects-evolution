@@ -23,6 +23,38 @@
   border-spacing: 0;
 }
 
+.tableTitle {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content:center;
+}
+
+.tableTitleNotSelect {
+  cursor: pointer;
+  color: gray;
+}
+
+.tableTitleSelect {
+  cursor: pointer;
+  color: black;
+}
+
+.division {
+  border-left: 3px solid black;
+  margin-left: 15px;
+  margin-right: 13px;
+  height: 24px;
+}
+
+.clearTable {
+  display: none;
+}
+
+.unclearTable {
+  display: flex;
+}
+
 .table th {
   background: #fff;
   padding: 8px 10px;
