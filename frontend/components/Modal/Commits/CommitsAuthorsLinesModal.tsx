@@ -67,6 +67,7 @@ const CommitsAuthorsLinesModal = (props: ModalProps) => {
                 added: elem.lines_added,
                 removed: elem.lines_removed,
                 docs: elem.docs ? 'Sim' : 'Não',
+                url: elem.url,
               });
               count++;
             }

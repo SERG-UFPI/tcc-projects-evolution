@@ -13,6 +13,7 @@ interface ModalProps {
 
 const IssuesDatesModal = (props: ModalProps) => {
   const [captionMsg, setCaptionMsg] = useState('');
+  const [tabIndex, setTabIndex] = useState(0);
 
   const parseDate = (date) => {
     if (date.length == 8) {
@@ -29,11 +30,40 @@ const IssuesDatesModal = (props: ModalProps) => {
   };
 
   const parseIssues = (response, start = undefined, end = undefined) => {
+    const result = [];
+
+    response.data['issues'].forEach((elem) => {
+      if (
+        (!start && !end) ||
+        (elem.created_at >= start && elem.created_at <= end) ||
+        (elem.created_at >= start && !end) ||
+        (elem.created_at <= end && !start)
+      ) {
+        result.push({
+          id: elem.id,
+          number: elem.number,
+          title: elem.title,
+          creator: elem.creator,
+          assignees: elem.assignees.toString(),
+          comments: elem.comments,
+          state: elem.state,
+          created: parseDate(elem.created_at),
+          closed: elem.closed_at ? parseDate(elem.closed_at) : '',
+          url: elem.url,
+        });
+      }
+    });
+
+    return result;
+  };
+
+  const parseIssuesByDate = (response, start = undefined, end = undefined) => {
     const [result, date, issueType] = [
       [],
       props.point['label'].replace(/[/-]/g, ''),
       props.point['data']['name'],
     ];
+
     response.data['issues'].forEach((elem) => {
       if (
         (!start && !end) ||
@@ -83,12 +113,53 @@ const IssuesDatesModal = (props: ModalProps) => {
     >
       <div className={styles.modalBox} onClick={(e) => e.stopPropagation()}>
         <div className={stylesTable.table_container}>
-          <h1>Data: {parseDate(props.point['label'])}</h1>
-          <MyTable
-            caption={captionMsg}
-            data={() => parseIssues(props.issues, props.start, props.end)}
-            columns={columns}
-          />
+          <div className={stylesTable.tableTitle}>
+            <h1
+              className={
+                tabIndex == 0
+                  ? stylesTable.tableTitleSelect
+                  : stylesTable.tableTitleNotSelect
+              }
+              onClick={() => setTabIndex(0)}
+            >
+              Issues Criadas e Fechadas
+            </h1>
+            <div className={stylesTable.division}></div>
+            <h1
+              className={
+                tabIndex != 0
+                  ? stylesTable.tableTitleSelect
+                  : stylesTable.tableTitleNotSelect
+              }
+              onClick={() => setTabIndex(1)}
+            >
+              Data: {parseDate(props.point['label'])}
+            </h1>
+          </div>
+          <div
+            className={
+              tabIndex == 1 ? stylesTable.clearTable : stylesTable.unclearTable
+            }
+          >
+            <MyTable
+              caption="Todas as Issues Criadas e Fechadas."
+              data={() => parseIssues(props.issues, props.start, props.end)}
+              columns={columns}
+            />
+          </div>
+          <div
+            className={
+              tabIndex != 1 ? stylesTable.clearTable : stylesTable.unclearTable
+            }
+          >
+            <MyTable
+              caption={captionMsg}
+              data={() =>
+                parseIssuesByDate(props.issues, props.start, props.end)
+              }
+              columns={columns}
+            />
+          </div>
         </div>
       </div>
     </div>
