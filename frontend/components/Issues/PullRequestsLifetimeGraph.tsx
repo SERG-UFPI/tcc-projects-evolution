@@ -49,7 +49,7 @@ const PullRequestsGraph = (props: PullRequestsProps) => {
             title: 'Tempo de Vida - PR',
             yaxis: {
               zeroline: false,
-              title: 'Dias',
+              title: 'Horas',
             },
             plot_bgcolor: '#fafafa',
             paper_bgcolor: '#fafafa',

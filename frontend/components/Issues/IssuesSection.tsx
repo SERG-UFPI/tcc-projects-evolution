@@ -38,9 +38,10 @@ const IssuesSection = (props: IssuesSectionProps) => {
       resCommits.data['commits'][resCommits.data['commits'].length - 1].date,
     ];
 
-    let begin =
-      firstIssueDate <= firsCommitDate ? firstIssueDate : firsCommitDate;
-    let end = lastIssueDate >= lastCommitDate ? lastIssueDate : lastCommitDate;
+    let [begin, end] = [
+      firstIssueDate <= firsCommitDate ? firstIssueDate : firsCommitDate,
+      lastIssueDate >= lastCommitDate ? lastIssueDate : lastCommitDate,
+    ];
 
     setStart(parseDate(begin));
     setEnd(parseDate(end));

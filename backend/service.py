@@ -71,11 +71,17 @@ def difference_between_dates(date1, date2):
         date1 = date1[0:4] + '-' + date1[4:6] + '-' + date1[6:8]
         date2 = date2[0:4] + '-' + date2[4:6] + '-' + date2[6:8]
 
-    d1 = datetime.strptime(date1, "%Y-%m-%d")
-    d2 = datetime.strptime(date2, "%Y-%m-%d")
+        d1 = datetime.strptime(date1, "%Y-%m-%d")
+        d2 = datetime.strptime(date2, "%Y-%m-%d")
 
-    delta = d2 - d1
-    return delta.days
+        delta = d2 - d1
+        result = delta.days
+    else:
+        d1 = datetime.strptime(date1, "%Y-%m-%dT%H:%M:%SZ")
+        d2 = datetime.strptime(date2, "%Y-%m-%dT%H:%M:%SZ")
+        result = round(abs(d1 - d2).total_seconds() / 3600.0, 2)
+
+    return result
 
 
 def get_commits(owner, repo):
@@ -316,15 +322,15 @@ def get_pull_requests(owner, repo):
     default_branch = ''
     for item in repo.fetch_items(category='pull_request', from_date=begin, to_date=end):
         created = parse_date(item['created_at'])
+        
         if item['closed_at']:
             closed = parse_date(item['closed_at'])
-            difference = difference_between_dates(created, closed)
+            difference = difference_between_dates(
+                item['created_at'], item['closed_at'])
         else:
             difference = None
-        if item['merged_at']:
-            merged = parse_date(item['merged_at'])
-        else:
-            merged = None
+
+        merged = parse_date(item['merged_at']) if item['merged_at'] else None
 
         requested_reviewers = parse_arrays(
             item['requested_reviewers'], 'login')
@@ -355,7 +361,7 @@ def get_pull_requests(owner, repo):
             'created': created,
             'closed': closed,
             'merged': merged,
-            "active_days": difference,
+            "active_hours": difference,
             'was_merged': item['merged'],
             'merged_by': item['merged_by']['login'] if item['merged_by'] else None,
             'comments': item['comments'] + item['review_comments'] + count_comments,
