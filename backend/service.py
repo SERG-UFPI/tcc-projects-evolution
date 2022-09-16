@@ -154,19 +154,34 @@ def branches_commits(owner, repo):
 
 
 def user_commits(owner, repo):
-    response = requests.get(
-        f"https://api.github.com/repos/{owner}/{repo}/commits")
-    data = response.json()
-
     users_dict = {}
-    for item in data:
-        user = item['author']['login']
-        commit_author = item['commit']['author']['name']
-        if user not in users_dict:
-            users_dict[user] = [commit_author]
-        else:
-            if commit_author not in users_dict[user]:
-                users_dict[user].append(commit_author)
+    count = 0
+    page = 1
+    control = [0]
+
+    while count == 0 or count >= 100:
+        response = requests.get(
+            f"https://api.github.com/repos/{owner}/{repo}/commits?per_page=100&page={page}")
+
+        data = response.json()
+
+        if(data):
+            for item in data:
+                user = item['author']['login']
+                commit_author = item['commit']['author']['name']
+                if user not in users_dict:
+                    users_dict[user] = [commit_author]
+                else:
+                    if commit_author not in users_dict[user]:
+                        users_dict[user].append(commit_author)
+
+                count += 1
+
+        if(control[-1] == count):
+            break
+
+        page += 1
+        control.append(count)
 
     result = {'users': users_dict}
     return json.dumps(result)
