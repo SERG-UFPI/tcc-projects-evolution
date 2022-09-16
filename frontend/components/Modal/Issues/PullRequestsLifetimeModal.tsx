@@ -42,7 +42,7 @@ const PullRequestsLifetimeModal = (props: ModalProps) => {
             title: elem.title,
             created: parseDate(elem.created),
             closed: parseDate(elem.closed),
-            activeDays: elem.active_days,
+            activeHours: elem.active_hours,
             merged: elem.was_merged ? 'Sim' : 'Não',
             mergedBy: elem.merged_by,
             url: elem.url,
@@ -59,7 +59,7 @@ const PullRequestsLifetimeModal = (props: ModalProps) => {
     { label: 'Título', accessor: 'title', sortable: true },
     { label: 'Data_Criação', accessor: 'created', sortable: true },
     { label: 'Data_Fechamento', accessor: 'closed', sortable: true },
-    { label: 'Dias Ativos', accessor: 'activeDays', sortable: true },
+    { label: 'Horas Ativas', accessor: 'activeHours', sortable: true },
     { label: 'Merged', accessor: 'merged', sortable: true },
     { label: 'Integrador', accessor: 'mergedBy', sortable: true },
   ];

@@ -39,7 +39,7 @@ const PullRequestsGraph = (props: PullRequestsProps) => {
         (elem.closed >= start && !end) ||
         (elem.closed <= end && !start)
       ) {
-        if (elem.active_days != null) lifetimeValues.push(elem.active_days);
+        if (elem.active_hours != null) lifetimeValues.push(elem.active_hours);
 
         if (elem.reviewers.length > 0 && elem.comments > 0)
           countReviewersAndComments.push(elem.number);
