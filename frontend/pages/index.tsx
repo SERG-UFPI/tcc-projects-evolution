@@ -78,15 +78,6 @@ export default function Home() {
             >
               Exibir
             </button>
-            <button
-              className={styles.button}
-              onClick={() => {
-                setRepoUrl('ES2-UFPI/maltese');
-                if (repoUrl.length > 0) loadData();
-              }}
-            >
-              MalteseRepo
-            </button>
           </div>
         </div>
         <span className={styles.description}>

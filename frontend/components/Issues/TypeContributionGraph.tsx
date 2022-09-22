@@ -48,28 +48,6 @@ const TypeContributionGraph = (props: TypeContributionProps) => {
     });
   };
 
-  const makeObjectsWithSameField = (arr) => {
-    let [maxLength, maxIndex] = [0, 0];
-
-    arr.forEach((elem) => {
-      if (Object.keys(elem).length > maxLength) {
-        maxLength = Object.keys(elem).length;
-        maxIndex = arr.indexOf(elem);
-      }
-    });
-
-    const aux = arr.splice(maxIndex, 1);
-    Object.keys(aux[0]).forEach((elem) => {
-      arr.forEach((obj) => {
-        if (Object.keys(obj).indexOf(elem) == -1) obj[elem] = 0;
-      });
-    });
-
-    arr.splice(maxIndex, 0, aux[0]);
-
-    return [];
-  };
-
   const unifyObjects = (arr) => {
     let [highestLength, highestItem] = [0, 0];
 
@@ -99,7 +77,7 @@ const TypeContributionGraph = (props: TypeContributionProps) => {
     start = undefined,
     end = undefined
   ) => {
-    const [resultIssues, countIssuesComments] = [[], []];
+    const countIssuesComments = [];
     let [issuesAuthors, issuesCommentsAuthors] = [{}, {}];
     resIssues.data['issues'].forEach((elem) => {
       if (
@@ -114,14 +92,14 @@ const TypeContributionGraph = (props: TypeContributionProps) => {
 
         if (elem.comments_authors) {
           Object.keys(elem.comments_authors).forEach((author) => {
+            if (!(author in issuesCommentsAuthors))
+              issuesCommentsAuthors[author] = 0;
             countIssuesComments.push(author);
           });
         }
       }
     });
     countOccurrences(issuesCommentsAuthors, countIssuesComments);
-
-    resultIssues.push(issuesAuthors);
 
     const [countComments, countMerges] = [[], []];
     let [prCommentsAuthors, integrationAuthors] = [{}, {}];
@@ -139,9 +117,8 @@ const TypeContributionGraph = (props: TypeContributionProps) => {
         }
 
         if (elem.was_merged) {
-          if (!(elem.merged_by in integrationAuthors)) {
+          if (!(elem.merged_by in integrationAuthors))
             integrationAuthors[elem.merged_by] = 0;
-          }
           countMerges.push(elem.merged_by);
         }
 
@@ -162,13 +139,8 @@ const TypeContributionGraph = (props: TypeContributionProps) => {
       prCommentsAuthors,
     ]);
 
-    resultIssues.push(commentAuthorsResult);
-    resultIssues.push(integrationAuthors);
-
-    makeObjectsWithSameField(resultIssues);
-
     setIssues(sortObject(issuesAuthors));
-    setComments(sortObject(prCommentsAuthors));
+    setComments(sortObject(commentAuthorsResult));
     setIntegration(sortObject(integrationAuthors));
 
     // ^^^ Relacionado ao Github (Issues || Comentários)
