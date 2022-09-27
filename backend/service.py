@@ -170,16 +170,17 @@ def user_commits(owner, repo):
             f"https://api.github.com/repos/{owner}/{repo}/commits?per_page=100&page={page}")
 
         data = response.json()
-
+        
         if(data):
             for item in data:
-                user = item['author']['login']
-                commit_author = item['commit']['author']['name']
-                if user not in users_dict:
-                    users_dict[user] = [commit_author]
-                else:
-                    if commit_author not in users_dict[user]:
-                        users_dict[user].append(commit_author)
+                if(item['author']):
+                    user = item['author']['login']    
+                    commit_author = item['commit']['author']['name']
+                    if user not in users_dict:
+                        users_dict[user] = [commit_author]
+                    else:
+                        if commit_author not in users_dict[user]:
+                            users_dict[user].append(commit_author)
 
                 count += 1
 
