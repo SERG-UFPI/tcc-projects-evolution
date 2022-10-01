@@ -70,7 +70,7 @@ const PullRequestsModal = (props: ModalProps) => {
           (elem.reviewers.length &&
             elem.comments &&
             selectLabel == 'Revisão e Comentários') ||
-          ((!elem.reviewers.length || !elem.comments) &&
+          ((elem.reviewers.length > 0 || elem.comments > 0) &&
             selectLabel == 'Revisão ou Comentários') ||
           (!elem.reviewers.length &&
             !elem.comments &&
