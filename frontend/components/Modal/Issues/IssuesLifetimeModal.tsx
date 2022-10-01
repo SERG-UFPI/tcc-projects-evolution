@@ -31,9 +31,9 @@ const IssuesLifetimeModal = (props: ModalProps) => {
     response.data['issues'].forEach((elem) => {
       if (
         (!start && !end) ||
-        (elem.created_at >= start && elem.created_at <= end) ||
-        (elem.created_at >= start && !end) ||
-        (elem.created_at <= end && !start)
+        (elem.closed_at >= start && elem.closed_at <= end) ||
+        (elem.closed_at >= start && !end) ||
+        (elem.closed_at <= end && !start)
       ) {
         if (elem.state == 'closed') {
           result.push({
