@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import axios from 'axios';
 import Head from 'next/head';
 import { useState } from 'react';
@@ -29,13 +28,21 @@ export default function Home() {
 
     try {
       const responses = await Promise.all([
-        axios.get(`https://20.163.20.169.nip.io/info/users/${owner}/${repo}`),
-        axios.get(`https://20.163.20.169.nip.io/info/issues/${owner}/${repo}`),
-        axios.get(`https://20.163.20.169.nip.io/info/commits/${owner}/${repo}`),
         axios.get(
-          `https://20.163.20.169.nip.io/info/branches/${owner}/${repo}`
+          `https://34.231.225.217.nip.io:7001/info/users/${owner}/${repo}`
         ),
-        axios.get(`https://20.163.20.169.nip.io/info/pr/${owner}/${repo}`),
+        axios.get(
+          `https://34.231.225.217.nip.io:7001/info/issues/${owner}/${repo}`
+        ),
+        axios.get(
+          `https://34.231.225.217.nip.io:7001/info/commits/${owner}/${repo}`
+        ),
+        axios.get(
+          `https://34.231.225.217.nip.io:7001/info/branches/${owner}/${repo}`
+        ),
+        axios.get(
+          `https://34.231.225.217.nip.io:7001/info/pr/${owner}/${repo}`
+        ),
       ]);
       setUsers(responses[0]);
       setIssues(responses[1]);
@@ -56,11 +63,14 @@ export default function Home() {
     <div className={styles.home}>
       <div>
         <Head>
-          <title>Projects Evolution</title>
+          <title>PEM</title>
         </Head>
       </div>
       <div className={styles.header}>
-        <span className={styles.title}>TCC Projects Evolution</span>
+        <span className={styles.title}>Ferramenta PEM</span>
+        <span style={{ fontSize: 15, padding: 10, marginTop: -20 }}>
+          ~Project Evolution Monitoring~
+        </span>
         <div className={styles.repoInput}>
           <input
             placeholder="Link do repositório"
