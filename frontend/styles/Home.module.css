@@ -59,10 +59,93 @@
   border-radius: 5px;
   background-color: #fafafa;
   box-shadow: 0 0 10px rgba(33,33,33,.2);
-  margin-bottom: 20px; 
+  margin-bottom: 20px;
+}
+
+.plot p {
+  font-size: 16px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  margin-top: 25px;
 }
 
 .pageComponents {
+  display: flex;
+  flex-direction: column;
+  width: 100%; 
+}
+
+.pageComponents h2 {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.buttonContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.buttonContainer button {
+  margin-left: 10px;
+  margin-right: 15px;
+}
+
+.inputIssues {
+  margin-top: 30px;
+  margin-bottom: 15px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.inputIssues input {
+  width: 200px;
+}
+
+.inputIssues button {
+  margin-top: 22px;
+  height: 37px;
+}
+
+.inputIssues select {
+  margin-top: 6px;
+  margin-left: 30px;
+  height: 37px;
+  width: fit-content;
+}
+
+.labelInputIssues {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.division {
+  border-left: 3px solid black;
+  margin-top: 22px;
+  margin-left: 30px;
+  height: 38px;
+}
+
+.labelSelectIssues {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.labelSelectIssues label{
+  margin-left: 35px;
+}
+
+.issuesContainer {
   display: flex;
   flex-direction: row;
   width: 100%;
@@ -70,6 +153,20 @@
   flex-wrap: wrap;
 }
 
-/* .description {
+.commitsContainer {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  justify-content: space-evenly;
+  flex-wrap: wrap;
+}
 
-} */
+.pageComponents hr {
+  width: 100%;
+}
+
+.plotCarousel {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
